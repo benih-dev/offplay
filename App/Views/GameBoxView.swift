@@ -34,7 +34,7 @@ struct GameBoxView: View {
         NavigationStack(path: $state.path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Enam permainan untuk waktu luangmu.")
+                    Text("Six games for your downtime.")
                         .font(.subheadline).foregroundStyle(GameTheme.secondary)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: textSize.isAccessibilitySize ? 260 : 155), spacing: 12)], spacing: 12) {
                         ForEach(GameID.allCases) { id in
@@ -42,7 +42,7 @@ struct GameBoxView: View {
                                 VStack(alignment: .leading, spacing: 12) {
                                     Image(systemName: GameCatalog.symbol(id)).font(.system(size: 29)).foregroundStyle(GameTheme.accent).accessibilityHidden(true)
                                     Text(id.name).font(.system(.headline, design: .rounded)).multilineTextAlignment(.leading)
-                                    Text(id.description).font(.caption).foregroundStyle(GameTheme.secondary).multilineTextAlignment(.leading)
+                                    Text(id.localizedDescription).font(.caption).foregroundStyle(GameTheme.secondary).multilineTextAlignment(.leading)
                                     Text(status(id)).font(.caption.weight(.semibold)).foregroundStyle(GameTheme.accent)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 158, alignment: .leading)
@@ -54,10 +54,10 @@ struct GameBoxView: View {
                             .buttonStyle(.plain)
                             .accessibilityIdentifier("catalog.\(id.rawValue)")
                             .accessibilityLabel("\(id.name), \(status(id))")
-                            .accessibilityHint("Membuka permainan langsung")
+                            .accessibilityHint("Opens the game")
                         }
                     }
-                    Label("Progres tersimpan saat kamu bermain.", systemImage: "externaldrive")
+                    Label("Progress is saved as you play.", systemImage: "externaldrive")
                         .font(.footnote).foregroundStyle(GameTheme.secondary)
                 }.padding(16)
             }
@@ -66,11 +66,11 @@ struct GameBoxView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button { store.present(.statistics) } label: { Image(systemName: "chart.bar").frame(minWidth: 48, minHeight: 48) }
-                        .accessibilityLabel("Statistik Pemain").accessibilityIdentifier("catalog.statistics")
+                        .accessibilityLabel("Player Statistics").accessibilityIdentifier("catalog.statistics")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { store.present(.settings) } label: { Image(systemName: "gearshape").frame(minWidth: 48, minHeight: 48) }
-                        .accessibilityLabel("Pengaturan").accessibilityIdentifier("catalog.settings")
+                        .accessibilityLabel("Settings").accessibilityIdentifier("catalog.settings")
                 }
             }
             .navigationDestination(for: GameID.self) { GamePlayView(id: $0) }
@@ -79,8 +79,8 @@ struct GameBoxView: View {
     }
 
     private func status(_ id: GameID) -> String {
-        guard let session = store.library.session(id) else { return "Siap dimainkan" }
-        if let result = session.outcome { return id == .game2048 ? "Sesi selesai" : result.name }
-        return session.hasStarted ? "Lanjutkan Sesi · \(GameTheme.time(session.elapsed))" : "Siap dimainkan"
+        guard let session = store.library.session(id) else { return String(localized: "Ready to play") }
+        if let result = session.outcome { return id == .game2048 ? String(localized: "Session ended") : result.localizedName }
+        return session.hasStarted ? String(localized: "Resume Game · \(GameTheme.time(session.elapsed))") : String(localized: "Ready to play")
     }
 }

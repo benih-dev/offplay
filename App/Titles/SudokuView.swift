@@ -12,7 +12,7 @@ struct SudokuView: View {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
             let duplicates = game.duplicateCells
             VStack(spacing: 10) {
-                Text("\(game.puzzle.difficulty.name) · tap sel kosong untuk mengisi").font(.footnote).foregroundStyle(GameTheme.secondary)
+                Text("\(game.puzzle.difficulty.localizedName) · Tap an empty cell to fill it").font(.footnote).foregroundStyle(GameTheme.secondary)
                 FittedBoard(columns: 9, preferredCellSize: size) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: 9), spacing: 0) {
                         ForEach(0..<81, id: \.self) { index in
@@ -21,7 +21,7 @@ struct SudokuView: View {
                     }.frame(width: size * 9)
                 }
                 if !duplicates.isEmpty {
-                    Text("Angka duplikat pada \(duplicates.count) sel.").font(.footnote).foregroundStyle(GameTheme.danger)
+                    Text("Cells with duplicate numbers: \(duplicates.count).").font(.footnote).foregroundStyle(GameTheme.danger)
                 }
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 6)], spacing: 6) {
                     ForEach(1...9, id: \.self) { digit in
@@ -30,9 +30,9 @@ struct SudokuView: View {
                     }
                 }
                 HStack(spacing: 8) {
-                    Button(noteMode ? "Catatan: aktif" : "Catatan") { noteMode.toggle() }
+                    Button(noteMode ? LocalizedStringKey("Notes: On") : "Notes") { noteMode.toggle() }
                         .buttonStyle(ActionButtonStyle(primary: noteMode)).accessibilityIdentifier("sudoku.notes")
-                    Button("Hapus") { enter(0) }.buttonStyle(ActionButtonStyle()).disabled(selected == nil).accessibilityIdentifier("sudoku.erase")
+                    Button("Erase") { enter(0) }.buttonStyle(ActionButtonStyle()).disabled(selected == nil).accessibilityIdentifier("sudoku.erase")
                 }
             }
         }
@@ -62,9 +62,9 @@ private struct SudokuCellView: View {
             if given { surface.accessibilityElement(children: .ignore) }
             else { Button(action: select) { surface }.buttonStyle(BoardButtonStyle()) }
         }
-        .accessibilityLabel("Baris \(index / 9 + 1), kolom \(index % 9 + 1)\(given ? ", angka bawaan" : "")")
-        .accessibilityValue(value == 0 ? "kosong" : String(value))
-        .accessibilityHint(duplicate ? "Angka duplikat" : notes.sorted().map(String.init).joined(separator: ", "))
+        .accessibilityLabel(given ? LocalizedStringKey("Row \(index / 9 + 1), column \(index % 9 + 1), given number") : "Row \(index / 9 + 1), column \(index % 9 + 1)")
+        .accessibilityValue(value == 0 ? String(localized: "empty") : String(value))
+        .accessibilityHint(duplicate ? String(localized: "Duplicate number") : notes.sorted().map(String.init).joined(separator: ", "))
         .accessibilityIdentifier("sudoku.cell.\(index)")
     }
 

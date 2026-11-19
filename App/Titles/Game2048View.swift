@@ -18,7 +18,7 @@ struct Game2048View: View {
                                 .background(tile >= 8 ? GameTheme.accent : GameTheme.accentFill)
                                 .foregroundStyle(tile >= 8 ? GameTheme.canvas : GameTheme.ink)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .accessibilityLabel("Baris \(index / 4 + 1), kolom \(index % 4 + 1), \(tile == 0 ? "kosong" : String(tile))")
+                                .accessibilityLabel("Row \(index / 4 + 1), column \(index % 4 + 1), \(tile == 0 ? String(localized: "empty") : String(tile))")
                         }
                 }
                     .frame(maxWidth: 480)
@@ -33,15 +33,15 @@ struct Game2048View: View {
                     .onKeyPress(.rightArrow) { move(.right); return .handled }
                     .onKeyPress(.upArrow) { move(.up); return .handled }
                     .onKeyPress(.downArrow) { move(.down); return .handled }
-                if game.reached2048 { Text("2048 tercapai. Kamu bisa terus bermain.").font(.footnote).foregroundStyle(GameTheme.accent) }
+                if game.reached2048 { Text("You reached 2048. Keep playing!").font(.footnote).foregroundStyle(GameTheme.accent) }
                 HStack(spacing: 8) {
                     ForEach([SlideDirection.left, .up, .down, .right], id: \.rawValue) { direction in
                         Button { move(direction) } label: { Image(systemName: "arrow.\(direction.rawValue)") }
-                            .buttonStyle(ActionButtonStyle()).accessibilityLabel("Geser \(label(direction))")
+                            .buttonStyle(ActionButtonStyle()).accessibilityLabel(label(direction))
                             .accessibilityIdentifier("slide.\(direction.rawValue)")
                     }
                 }
-                Text("Geser papan, tombol arah, atau tombol panah keyboard.").font(.caption).foregroundStyle(GameTheme.secondary)
+                Text("Swipe the board, tap the direction buttons, or use the arrow keys.").font(.caption).foregroundStyle(GameTheme.secondary)
             }.onAppear { keyboardFocus = true }
         }
     }
@@ -52,7 +52,7 @@ struct Game2048View: View {
             let changed = game.slide(direction); state = .game2048(game); return changed
         }
     }
-    private func label(_ direction: SlideDirection) -> String {
-        switch direction { case .left: "kiri"; case .right: "kanan"; case .up: "atas"; case .down: "bawah" }
+    private func label(_ direction: SlideDirection) -> LocalizedStringKey {
+        switch direction { case .left: "Slide left"; case .right: "Slide right"; case .up: "Slide up"; case .down: "Slide down" }
     }
 }
