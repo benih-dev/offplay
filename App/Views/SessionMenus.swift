@@ -25,10 +25,18 @@ struct NewGameView: View {
     let id: GameID
     @State private var sudoku: SudokuDifficulty
     @State private var mines: MineDifficulty
+    @State private var contentHeight: CGFloat = 0
     @Environment(AppStore.self) private var store
+    @Environment(\.dynamicTypeSize) private var textSize
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     init(id: GameID, sudoku: SudokuDifficulty, mines: MineDifficulty) {
         self.id = id; _sudoku = State(initialValue: sudoku); _mines = State(initialValue: mines)
+    }
+
+    private var detent: PresentationDetent {
+        if textSize.isAccessibilitySize || verticalSizeClass == .compact { return .large }
+        return contentHeight > 0 ? .height(contentHeight) : .medium
     }
 
     var body: some View {
@@ -56,9 +64,11 @@ struct NewGameView: View {
                     .buttonStyle(ActionButtonStyle(primary: true, destructive: abandoning)).accessibilityIdentifier("new.confirm")
                 Button("Cancel") { store.modal = nil }.buttonStyle(ActionButtonStyle()).keyboardShortcut(.cancelAction).accessibilityIdentifier("new.cancel")
             }.padding(24)
+                .onGeometryChange(for: CGFloat.self) { ceil($0.size.height) } action: { contentHeight = $0 }
         }
         .foregroundStyle(GameTheme.ink).background(GameTheme.canvas)
-        .presentationDetents([.medium, .large])
+        .presentationDetents([detent])
+        .presentationDragIndicator(.visible)
     }
 }
 

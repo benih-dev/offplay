@@ -268,6 +268,44 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["session.result"].exists)
     }
 
+    @MainActor func testSudokuNewGameShowsAllControlsWithoutScrolling() {
+        let app = launch()
+        open("sudoku", in: app)
+        let cell = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'sudoku.cell.' AND value == 'empty'")).firstMatch
+        cell.tap()
+        let digit = app.buttons["sudoku.digit.1"]
+        for _ in 0..<5 where !digit.isHittable { app.swipeUp() }
+        digit.tap()
+        XCTAssertTrue(app.buttons["session.undo"].isEnabled)
+
+        assertNewGameControls(in: app, difficultyIDs: ["new.sudoku.easy", "new.sudoku.medium", "new.sudoku.hard"], screenshot: "Sudoku New Game")
+        XCTAssertTrue(app.buttons["session.undo"].isEnabled)
+    }
+
+    @MainActor func testMinesweeperNewGameShowsAllControlsWithoutScrolling() {
+        let app = launch()
+        open("minesweeper", in: app)
+        app.buttons["mines.flagMode"].tap()
+        let cell = app.buttons["mines.cell.0"]
+        cell.tap()
+        XCTAssertTrue(cell.label.contains("flagged"))
+
+        assertNewGameControls(in: app, difficultyIDs: ["new.mines.beginner", "new.mines.intermediate"], screenshot: "Minesweeper New Game")
+        XCTAssertTrue(cell.label.contains("flagged"))
+    }
+
+    @MainActor private func assertNewGameControls(in app: XCUIApplication, difficultyIDs: [String], screenshot: String) {
+        app.buttons["session.new"].tap()
+        XCTAssertTrue(app.buttons["new.confirm"].waitForExistence(timeout: 5))
+        attach(app, name: screenshot)
+        for id in difficultyIDs + ["new.confirm", "new.cancel"] {
+            let button = app.buttons[id]
+            XCTAssertTrue(button.isHittable && app.frame.contains(button.frame), "\(id) should be fully visible without scrolling")
+        }
+        app.buttons["new.cancel"].tap()
+        XCTAssertTrue(app.buttons["new.cancel"].waitForNonExistence(timeout: 5))
+    }
+
     @MainActor func testPauseFreezesClockAndNewGameChangesDifficulty() {
         let app = launch()
         open("minesweeper", in: app)
