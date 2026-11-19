@@ -88,7 +88,7 @@ public struct GameStatistics: Codable, Equatable, Sendable {
 
     var validForArchive: Bool {
         [started, completed, won, lost, abandoned, target2048Count, streak, longestStreak].allSatisfy { $0 >= 0 } &&
-        activeTime.isFinite && activeTime >= 0 && (bestTime == nil || (bestTime!.isFinite && bestTime! >= 0))
+        GameLibrary.isValidActiveTime(activeTime) && (bestTime.map(GameLibrary.isValidActiveTime) ?? true)
     }
 
     mutating func finish(_ session: GameSession, outcome: SessionOutcome, trackStreak: Bool) {
@@ -146,6 +146,8 @@ private struct ChallengeBag: Codable, Equatable, Sendable {
 
 public struct GameLibrary: Codable, Equatable, Sendable {
     public static let currentVersion = 1
+    /// Upper bound for tracked play time, so every stored duration converts to whole `Int` seconds.
+    public static let maxActiveTime = TimeInterval(Int32.max)
     public let version: Int
     public private(set) var sessions: [String: GameSession] = [:]
     public private(set) var statistics: [String: TitleStatistics] = [:]
@@ -222,13 +224,13 @@ public struct GameLibrary: Codable, Equatable, Sendable {
 
     public mutating func addActiveTime(_ seconds: TimeInterval, to id: GameID) {
         guard seconds > 0, seconds.isFinite, var session = session(id), session.hasStarted, session.outcome == nil else { return }
-        session.elapsed += seconds
+        session.elapsed = min(session.elapsed + seconds, Self.maxActiveTime)
         sessions[id.rawValue] = session
         var stats = stats(id)
-        stats.total.activeTime += seconds
+        stats.total.activeTime = min(stats.total.activeTime + seconds, Self.maxActiveTime)
         if let group = session.state.groupKey {
             var bucket = stats.groups[group] ?? GameStatistics()
-            bucket.activeTime += seconds
+            bucket.activeTime = min(bucket.activeTime + seconds, Self.maxActiveTime)
             stats.groups[group] = bucket
         }
         statistics[id.rawValue] = stats
@@ -238,9 +240,13 @@ public struct GameLibrary: Codable, Equatable, Sendable {
         guard version == Self.currentVersion else { throw SaveFileError.unsupportedVersion(version) }
         guard sessions.allSatisfy({ key, session in
             GameID(rawValue: key) == session.state.id && session.state.validForArchive &&
-            session.elapsed.isFinite && session.elapsed >= 0 &&
+            Self.isValidActiveTime(session.elapsed) &&
             session.outcome == session.state.outcome && (session.outcome == nil || session.hasStarted)
         }), statistics.values.allSatisfy({ $0.total.validForArchive && $0.groups.values.allSatisfy(\.validForArchive) }) else { throw SaveFileError.invalid }
+    }
+
+    static func isValidActiveTime(_ seconds: TimeInterval) -> Bool {
+        seconds.isFinite && seconds >= 0 && seconds <= maxActiveTime
     }
 
     private mutating func finish(_ session: GameSession, outcome: SessionOutcome) {
