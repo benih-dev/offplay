@@ -18,15 +18,15 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["new.confirm"].tap()
         app.buttons["session.back"].tap()
         app.buttons["catalog.statistics"].tap()
-        let terminalTile = app.descendants(matching: .any)["stats.game2048.highestTile"]
+        let terminalTile = app.staticTexts["stats.game2048.highestTile"]
         for _ in 0..<12 where !terminalTile.isHittable {
             app.swipeUp(velocity: .slow)
         }
         XCTAssertTrue(terminalTile.isHittable)
-        let record = app.descendants(matching: .any)["stats.game2048.highScore"]
+        let record = app.staticTexts["stats.game2048.highScore"]
         Thread.sleep(forTimeInterval: 2)
         attach(app, name: "2048 high score after restart")
-        XCTAssertEqual(record.value as? String, String(score))
+        XCTAssertEqual(record.label, String(score))
     }
 
     @MainActor func testMinesweeperLossMarksExplodedMine() throws {

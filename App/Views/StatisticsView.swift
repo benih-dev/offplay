@@ -47,13 +47,8 @@ struct StatisticsView: View {
         }
     }
 
-    @ViewBuilder private func stat(_ name: String, _ value: String, id: String? = nil) -> some View {
-        let row = HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing) }
-        if let id {
-            row.accessibilityElement(children: .combine).accessibilityValue(value).accessibilityIdentifier(id)
-        } else {
-            row
-        }
+    private func stat(_ name: String, _ value: String, id: String? = nil) -> some View {
+        HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing).accessibilityIdentifier(id ?? "") }
     }
     private func bestTime(_ stats: GameStatistics) -> some View {
         stat("Waktu Menang terbaik", stats.bestTime.map(GameTheme.time) ?? "Belum ada rekor")
