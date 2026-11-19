@@ -326,6 +326,35 @@ final class OffPlayUITests: XCTestCase {
         print("BOARD MEASUREMENT \(prefix) \(columns) columns: \(cellSpacing)pt on \(app.frame.width)pt screen")
     }
 
+    @MainActor func test2048BoardSwipesMatchDirectionalButtons() {
+        let app = launch()
+        open("game2048", in: app)
+        let board = app.descendants(matching: .any)["slide.board"]
+        func tiles() -> [String] { board.staticTexts.allElementsBoundByIndex.map(\.label) }
+        let initial = tiles()
+        board.tap()
+        XCTAssertEqual(tiles(), initial)
+        let center = board.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        center.press(forDuration: 0.01, thenDragTo: center.withOffset(CGVector(dx: 0, dy: 12)))
+        XCTAssertEqual(tiles(), initial)
+        continueAfterFailure = true
+        for direction in ["left", "up", "down"] {
+            let before = tiles()
+            XCTAssertEqual(before.count, 16)
+            app.buttons["slide.\(direction)"].tap()
+            let expected = tiles()
+            XCTAssertNotEqual(expected, before, "Fixture must allow a \(direction) move")
+            app.buttons["session.undo"].tap()
+            XCTAssertEqual(tiles(), before)
+            switch direction {
+            case "left": board.swipeLeft()
+            case "up": board.swipeUp()
+            default: board.swipeDown()
+            }
+            XCTAssertEqual(tiles(), expected, "Board swipe \(direction) must match its direction button")
+        }
+    }
+
     @MainActor func testRulesAndDirectionalControls() {
         let app = launch()
         open("blockGrid", in: app)
