@@ -3,6 +3,25 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testMinesweeperLossMarksExplodedMine() throws {
+        let app = launch()
+        open("minesweeper", in: app)
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.minesweeper, content: try GameContent.bundled())
+        guard case var .minesweeper(game)? = library.session(.minesweeper)?.state else {
+            return XCTFail("Expected Minesweeper session")
+        }
+        game.reveal(at: 0)
+        let mine = try XCTUnwrap(game.mines.sorted().first { app.buttons["mines.cell.\($0)"].isHittable })
+        XCTAssertFalse(app.buttons["mines.cell.\(mine)"].label.contains("meledak"))
+        app.buttons["mines.cell.0"].tap()
+        app.buttons["mines.cell.\(mine)"].tap()
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Kalah")
+        XCTAssertTrue(app.buttons["mines.cell.\(mine)"].label.contains("ranjau yang meledak"))
+        let otherMine = try XCTUnwrap(game.mines.sorted().first { $0 != mine && app.buttons["mines.cell.\($0)"].exists })
+        XCTAssertTrue(app.buttons["mines.cell.\(otherMine)"].label.hasSuffix("ranjau"))
+    }
+
     @MainActor func testSettingsFollowSystemUpdatesOpenSheet() {
         let app = launch(theme: "dark")
         app.buttons["catalog.settings"].tap()

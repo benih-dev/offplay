@@ -24,8 +24,8 @@ struct MinesweeperView: View {
                             Button { open(index) } label: {
                                 Text(symbol(game, index)).font(.system(.title3, design: .rounded).bold())
                                     .frame(width: size, height: size)
-                                    .foregroundStyle(game.isFinished && game.mines.contains(index) ? GameTheme.danger : GameTheme.ink)
-                                    .background(game.revealed.contains(index) ? GameTheme.canvas : GameTheme.accentFill)
+                                    .foregroundStyle(foreground(game, index))
+                                    .background(background(game, index))
                                     .overlay(Rectangle().stroke(GameTheme.line, lineWidth: 1))
                             }
                             .buttonStyle(BoardButtonStyle())
@@ -53,9 +53,18 @@ struct MinesweeperView: View {
         return "·"
     }
     private func description(_ game: MinesweeperGame, _ index: Int) -> String {
+        if game.exploded == index { return "ranjau yang meledak" }
         if game.isFinished && game.mines.contains(index) { return "ranjau" }
         if game.flags.contains(index) { return "bendera" }
         if game.revealed.contains(index) { return "terbuka, \(game.adjacentMines(at: index)) ranjau di sekitar" }
         return "tertutup"
+    }
+    private func foreground(_ game: MinesweeperGame, _ index: Int) -> Color {
+        if game.exploded == index { return GameTheme.canvas }
+        return game.isFinished && game.mines.contains(index) ? GameTheme.danger : GameTheme.ink
+    }
+    private func background(_ game: MinesweeperGame, _ index: Int) -> Color {
+        if game.exploded == index { return GameTheme.danger }
+        return game.revealed.contains(index) ? GameTheme.canvas : GameTheme.accentFill
     }
 }
