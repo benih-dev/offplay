@@ -23,8 +23,9 @@ struct Game2048View: View {
                 }
                     .frame(maxWidth: 480)
                     .accessibilityElement(children: .contain).accessibilityIdentifier("slide.board")
-                    .gesture(DragGesture(minimumDistance: 24).onEnded { gesture in
+                    .highPriorityGesture(DragGesture(minimumDistance: 0).onEnded { gesture in
                         let x = gesture.translation.width, y = gesture.translation.height
+                        guard max(abs(x), abs(y)) >= 24 else { return }
                         move(abs(x) > abs(y) ? (x < 0 ? .left : .right) : (y < 0 ? .up : .down))
                     })
                     .focusable().focused($keyboardFocus)
