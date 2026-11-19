@@ -16,9 +16,9 @@ struct StatisticsView: View {
                         stat("Active Time", GameTheme.time(stats.total.activeTime))
                         switch id {
                         case .blockGrid, .game2048:
-                            stat("High Score", stats.total.highScore.map(String.init) ?? String(localized: "No record yet"))
+                            stat("High Score", stats.total.highScore.map(String.init) ?? String(localized: "No record yet"), id: "stats.\(id.rawValue).highScore")
                             if id == .game2048 {
-                                stat("Highest Final Tile", stats.total.highestTile.map(String.init) ?? String(localized: "No record yet"))
+                                stat("Highest Final Tile", stats.total.highestTile.map(String.init) ?? String(localized: "No record yet"), id: "stats.game2048.highestTile")
                                 stat("Sessions Reaching 2048", String(stats.total.target2048Count))
                             }
                         case .klondike:
@@ -47,8 +47,8 @@ struct StatisticsView: View {
         }
     }
 
-    private func stat(_ name: LocalizedStringKey, _ value: String) -> some View {
-        HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing) }
+    private func stat(_ name: LocalizedStringKey, _ value: String, id: String? = nil) -> some View {
+        HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing).accessibilityIdentifier(id ?? "") }
     }
     private func bestTime(_ stats: GameStatistics) -> some View {
         stat("Best Winning Time", stats.bestTime.map(GameTheme.time) ?? String(localized: "No record yet"))

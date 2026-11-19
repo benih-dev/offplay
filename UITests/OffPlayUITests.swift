@@ -3,6 +3,32 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func test2048RestartKeepsHighScore() throws {
+        let app = launch()
+        open("game2048", in: app)
+        for direction in ["left", "up", "right", "down", "left", "up"] {
+            app.buttons["slide.\(direction)"].tap()
+        }
+        let scoreLabel = app.descendants(matching: .any)["session.score"].label
+        let score = try XCTUnwrap(scoreLabel.split(whereSeparator: { !$0.isNumber }).last.flatMap { Int($0) })
+        XCTAssertGreaterThan(score, 0)
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "2048 earned score")
+        app.buttons["session.new"].tap()
+        app.buttons["new.confirm"].tap()
+        app.buttons["session.back"].tap()
+        app.buttons["catalog.statistics"].tap()
+        let terminalTile = app.staticTexts["stats.game2048.highestTile"]
+        for _ in 0..<12 where !terminalTile.isHittable {
+            app.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(terminalTile.isHittable)
+        let record = app.staticTexts["stats.game2048.highScore"]
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "2048 high score after restart")
+        XCTAssertEqual(record.label, String(score))
+    }
+
     @MainActor func testEnglishFallbackAndIndonesianLocalization() {
         let app = launch(language: "fr")
         XCTAssertTrue(app.staticTexts["Six games for your downtime."].exists)
