@@ -7,11 +7,20 @@ import Combine
 
     var body: some Scene {
         WindowGroup {
-            AppRootView()
+            ThemedRootView()
                 .environment(store)
-                .preferredColorScheme(store.colorScheme)
                 .onChange(of: phase) { _, phase in store.setSceneActive(phase == .active) }
         }
+    }
+}
+
+private struct ThemedRootView: View {
+    @Environment(AppStore.self) private var store
+    @Environment(\.colorScheme) private var systemColorScheme
+
+    var body: some View {
+        AppRootView()
+            .environment(\.colorScheme, store.colorScheme ?? systemColorScheme)
     }
 }
 
