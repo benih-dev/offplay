@@ -240,7 +240,7 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Compact Game Box")
         open("blockGrid", in: app)
         app.buttons["block.piece.0"].tap()
-        XCTAssertGreaterThanOrEqual(app.buttons["block.cell.0"].frame.width, 48)
+        assertBoardFits(app, prefix: "block", columns: 8)
         attach(app, name: "Compact Block Grid")
         app.buttons["session.back"].tap()
         open("klondike", in: app)
@@ -248,10 +248,34 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Compact Klondike")
         app.buttons["session.back"].tap()
         open("sudoku", in: app)
+        assertBoardFits(app, prefix: "sudoku", columns: 9)
         let digit = app.buttons["sudoku.digit.1"]
         for _ in 0..<5 where !digit.isHittable { app.swipeUp() }
         XCTAssertTrue(digit.isHittable)
         attach(app, name: "Compact Sudoku")
+        app.buttons["session.back"].tap()
+        open("minesweeper", in: app)
+        assertBoardFits(app, prefix: "mines", columns: 9)
+        app.buttons["session.new"].tap()
+        app.buttons["new.mines.intermediate"].tap()
+        if !app.buttons["new.confirm"].isHittable { app.swipeUp() }
+        app.buttons["new.confirm"].tap()
+        XCTAssertTrue(app.staticTexts["Menengah"].waitForExistence(timeout: 5))
+        assertBoardFits(app, prefix: "mines", columns: 16)
+    }
+
+    @MainActor private func assertBoardFits(_ app: XCUIApplication, prefix: String, columns: Int, file: StaticString = #filePath, line: UInt = #line) {
+        let cells = (0..<columns).map { app.descendants(matching: .any)["\(prefix).cell.\($0)"].firstMatch }
+        let expectedSize = floor(min(48, (app.frame.width - 24 - 16) / CGFloat(columns)))
+        for cell in cells {
+            XCTAssertTrue(cell.isHittable, file: file, line: line)
+            XCTAssertGreaterThanOrEqual(cell.frame.minX, app.frame.minX, file: file, line: line)
+            XCTAssertLessThanOrEqual(cell.frame.maxX, app.frame.maxX, file: file, line: line)
+        }
+        let cellSpacing = (cells.last!.frame.midX - cells.first!.frame.midX) / CGFloat(columns - 1)
+        XCTAssertEqual(cellSpacing, expectedSize, accuracy: 0.1, file: file, line: line)
+        XCTAssertEqual(cells.first!.frame.minX - app.frame.minX, app.frame.maxX - cells.last!.frame.maxX, accuracy: 1, file: file, line: line)
+        print("BOARD MEASUREMENT \(prefix) \(columns) columns: \(cellSpacing)pt on \(app.frame.width)pt screen")
     }
 
     @MainActor func testRulesAndDirectionalControls() {

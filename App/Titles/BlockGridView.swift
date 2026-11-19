@@ -11,7 +11,7 @@ struct BlockGridView: View {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
             VStack(spacing: 12) {
                 Text("Pilih keping, lalu tap pojok kiri atas tempatnya.").font(.footnote).foregroundStyle(GameTheme.secondary)
-                BoardViewport(height: size * 8 + 16) {
+                FittedBoard(columns: 8, preferredCellSize: size) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: 8), spacing: 0) {
                         ForEach(0..<64, id: \.self) { index in
                             Button {
@@ -49,7 +49,7 @@ struct BlockGridView: View {
                         .accessibilityIdentifier("block.piece.\(slot)")
                     }
                 }
-                Text("Papan dapat digeser. Keping tidak dapat diputar.").font(.caption).foregroundStyle(GameTheme.secondary)
+                Text("Keping tidak dapat diputar.").font(.caption).foregroundStyle(GameTheme.secondary)
             }
         }
     }

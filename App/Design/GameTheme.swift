@@ -72,6 +72,28 @@ struct MetricView: View {
     }
 }
 
+struct FittedBoard<Content: View>: View {
+    let columns: Int
+    let preferredCellSize: CGFloat
+    @ViewBuilder let content: (CGFloat) -> Content
+    @State private var availableWidth: CGFloat = 0
+
+    private var cellSize: CGFloat {
+        floor(min(preferredCellSize, max(0, availableWidth - 16) / CGFloat(columns)))
+    }
+
+    var body: some View {
+        content(cellSize)
+            .padding(8)
+            .frame(maxWidth: .infinity)
+            .frame(height: cellSize * CGFloat(columns) + 16)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
+            .background(GameTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameTheme.line, lineWidth: 1))
+    }
+}
+
 struct BoardViewport<Content: View>: View {
     let height: CGFloat
     @ViewBuilder let content: () -> Content
