@@ -16,9 +16,9 @@ struct StatisticsView: View {
                         stat("Waktu aktif", GameTheme.time(stats.total.activeTime))
                         switch id {
                         case .blockGrid, .game2048:
-                            stat("Skor tertinggi", stats.total.highScore.map(String.init) ?? "Belum ada rekor")
+                            stat("Skor tertinggi", stats.total.highScore.map(String.init) ?? "Belum ada rekor", id: "stats.\(id.rawValue).highScore")
                             if id == .game2048 {
-                                stat("Ubin terminal tertinggi", stats.total.highestTile.map(String.init) ?? "Belum ada rekor")
+                                stat("Ubin terminal tertinggi", stats.total.highestTile.map(String.init) ?? "Belum ada rekor", id: "stats.game2048.highestTile")
                                 stat("Sesi mencapai 2048", String(stats.total.target2048Count))
                             }
                         case .klondike:
@@ -47,8 +47,13 @@ struct StatisticsView: View {
         }
     }
 
-    private func stat(_ name: String, _ value: String) -> some View {
-        HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing) }
+    @ViewBuilder private func stat(_ name: String, _ value: String, id: String? = nil) -> some View {
+        let row = HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing) }
+        if let id {
+            row.accessibilityElement(children: .combine).accessibilityValue(value).accessibilityIdentifier(id)
+        } else {
+            row
+        }
     }
     private func bestTime(_ stats: GameStatistics) -> some View {
         stat("Waktu Menang terbaik", stats.bestTime.map(GameTheme.time) ?? "Belum ada rekor")
