@@ -521,6 +521,26 @@
         }
       }
     },
+    "Streak": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beruntun"
+          }
+        }
+      }
+    },
+    "Win rate": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tingkat menang"
+          }
+        }
+      }
+    },
     "Longest Streak": {
       "localizations": {
         "id": {

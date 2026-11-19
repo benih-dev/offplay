@@ -3,6 +3,28 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testIndonesianStatisticsLabels() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-reset-data", "-theme", "light", "-AppleLanguages", "(id)", "-AppleLocale", "id_ID"]
+        app.launch()
+        XCTAssertTrue(app.buttons["catalog.statistics"].waitForExistence(timeout: 10))
+        open("minesweeper", in: app)
+        app.buttons["mines.cell.0"].tap()
+        app.buttons["session.new"].tap()
+        app.buttons["new.confirm"].tap()
+        app.buttons["session.back"].tap()
+        app.buttons["catalog.statistics"].tap()
+        let winRate = app.staticTexts["stats.winRate.label"].firstMatch
+        let streak = app.staticTexts["stats.streak.label"].firstMatch
+        for _ in 0..<16 where !streak.isHittable { app.swipeUp(velocity: .slow) }
+        XCTAssertTrue(winRate.isHittable)
+        XCTAssertTrue(streak.isHittable)
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "Indonesian Statistics")
+        XCTAssertEqual(winRate.label, "Tingkat menang")
+        XCTAssertEqual(streak.label, "Beruntun")
+    }
+
     @MainActor func test2048RestartKeepsHighScore() throws {
         let app = launch()
         open("game2048", in: app)
