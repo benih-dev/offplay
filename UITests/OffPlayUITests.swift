@@ -261,7 +261,36 @@ final class OffPlayUITests: XCTestCase {
         if !app.buttons["new.confirm"].isHittable { app.swipeUp() }
         app.buttons["new.confirm"].tap()
         XCTAssertTrue(app.staticTexts["Menengah"].waitForExistence(timeout: 5))
-        assertBoardFits(app, prefix: "mines", columns: 16)
+        let first = app.buttons["mines.cell.0"]
+        let second = app.buttons["mines.cell.1"]
+        let last = app.buttons["mines.cell.15"]
+        XCTAssertEqual(second.frame.midX - first.frame.midX, 36, accuracy: 0.1)
+        XCTAssertFalse(last.isHittable)
+        app.buttons["mines.flagMode"].tap()
+        first.tap()
+        XCTAssertTrue(first.label.contains("bendera"))
+        let board = app.scrollViews["board.viewport"]
+        board.swipeLeft()
+        XCTAssertTrue(last.isHittable)
+        last.tap()
+        XCTAssertTrue(last.label.contains("bendera"))
+        print("BOARD MEASUREMENT mines 16 columns: 36.0pt on \(app.frame.width)pt screen (scrolling)")
+    }
+
+    @MainActor func testSudokuFullDigitPadIsReachable() {
+        let app = launch()
+        open("sudoku", in: app)
+        let cell = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'sudoku.cell.'")).firstMatch
+        cell.tap()
+        app.swipeUp()
+        for digit in 7...9 {
+            let button = app.buttons["sudoku.digit.\(digit)"]
+            XCTAssertTrue(button.isHittable)
+            XCTAssertLessThanOrEqual(button.frame.maxY, app.buttons["session.undo"].frame.minY - 8)
+            button.tap()
+            XCTAssertEqual(cell.value as? String, String(digit))
+        }
+        attach(app, name: "Sudoku Full Digit Pad")
     }
 
     @MainActor private func assertBoardFits(_ app: XCUIApplication, prefix: String, columns: Int, file: StaticString = #filePath, line: UInt = #line) {
