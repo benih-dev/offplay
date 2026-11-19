@@ -48,7 +48,7 @@ enum AppModal: String, Identifiable {
             if testing, let index = ProcessInfo.processInfo.arguments.firstIndex(of: "-theme"),
                ProcessInfo.processInfo.arguments.indices.contains(index + 1),
                let appearance = AppAppearance(rawValue: ProcessInfo.processInfo.arguments[index + 1]) { library.appearance = appearance }
-        } catch { loadError = error.localizedDescription }
+        } catch { loadError = error.offPlayDescription }
         loading = false
     }
 
@@ -109,7 +109,7 @@ enum AppModal: String, Identifiable {
         guard sceneActive, modal == nil, activeID == id else { return false }
         flushTime()
         guard library.act(on: id, action) else {
-            feedback = "Langkah belum dapat dilakukan."
+            feedback = String(localized: "That move isn’t allowed.")
             haptic(.error)
             return false
         }
@@ -118,7 +118,7 @@ enum AppModal: String, Identifiable {
             timeStamp = nil
             haptic(result == .won ? .success : .error)
         } else if submittingWord {
-            feedback = "Belum tepat. Susun hurufnya lagi."
+            feedback = String(localized: "Not quite. Rearrange the letters and try again.")
             haptic(.error)
         } else if library.hapticsEnabled { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
         resetClock()
@@ -155,7 +155,7 @@ enum AppModal: String, Identifiable {
     func save() {
         guard !loading, loadError == nil else { return }
         do { try fileStore.save(library); saveError = nil }
-        catch { saveError = "Perubahan belum tersimpan: \(error.localizedDescription)" }
+        catch { saveError = String(localized: "Changes couldn’t be saved: \(error.offPlayDescription)") }
     }
 
     private func resetClock() {

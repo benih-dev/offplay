@@ -1,0 +1,1336 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ Rules": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aturan %@"
+          }
+        }
+      }
+    },
+    "%@ of %@, column %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ %@, kolom %lld"
+          }
+        }
+      }
+    },
+    "%@ · Tap an empty cell to fill it": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · tap sel kosong untuk mengisi"
+          }
+        }
+      }
+    },
+    "%lld letters": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld huruf"
+          }
+        }
+      }
+    },
+    "Abandoned": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ditinggalkan"
+          }
+        }
+      }
+    },
+    "About OffPlay": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tentang OffPlay"
+          }
+        }
+      }
+    },
+    "Active Time": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waktu aktif"
+          }
+        }
+      }
+    },
+    "Answer": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jawaban"
+          }
+        }
+      }
+    },
+    "Answer slot %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slot jawaban %lld"
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilan"
+          }
+        }
+      }
+    },
+    "Available Letters": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huruf tersedia"
+          }
+        }
+      }
+    },
+    "Back to Game Box": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ke Game Box"
+          }
+        }
+      }
+    },
+    "Beginner": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pemula"
+          }
+        }
+      }
+    },
+    "Best Winning Time": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waktu Menang terbaik"
+          }
+        }
+      }
+    },
+    "Build an Indonesian word · %lld letters": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Susun satu kata · %lld huruf"
+          }
+        }
+      }
+    },
+    "Build foundations from ace to king.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Susun kartu dari Ace ke King."
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batal"
+          }
+        }
+      }
+    },
+    "Cells with duplicate numbers: %lld.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angka duplikat pada %lld sel."
+          }
+        }
+      }
+    },
+    "Changes couldn’t be saved: %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perubahan belum tersimpan: %@"
+          }
+        }
+      }
+    },
+    "Choose a piece from the tray, then tap the cell where its top-left corner should go. Pieces cannot be rotated. Full rows and columns clear together. You get one point per cell placed and 10 per line cleared. A new tray appears after you use all three pieces. The game ends when none of the remaining pieces fit.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih keping dari baki, lalu tap petak untuk pojok kiri atas keping. Keping tidak dapat diputar. Baris dan kolom penuh dibersihkan bersamaan. Skor: satu poin per sel keping ditambah 10 per garis. Baki baru muncul sesudah ketiga keping terpakai. Sesi berakhir ketika tidak ada keping tersisa yang dapat diletakkan."
+          }
+        }
+      }
+    },
+    "Choose a piece, then tap where its top-left corner should go.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih keping, lalu tap pojok kiri atas tempatnya."
+          }
+        }
+      }
+    },
+    "Column %lld empty, kings only": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kolom %lld kosong, hanya King"
+          }
+        }
+      }
+    },
+    "Couldn’t open saved data": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpanan belum dapat dibuka"
+          }
+        }
+      }
+    },
+    "Couldn’t read the game content.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konten permainan belum dapat dibaca."
+          }
+        }
+      }
+    },
+    "Couldn’t read the save file.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpanan tidak dapat dibaca."
+          }
+        }
+      }
+    },
+    "Dark": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelap"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selesai"
+          }
+        }
+      }
+    },
+    "Draw from the stock": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambil kartu stock"
+          }
+        }
+      }
+    },
+    "Duplicate number": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angka duplikat"
+          }
+        }
+      }
+    },
+    "Easy": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudah"
+          }
+        }
+      }
+    },
+    "Erase": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hapus"
+          }
+        }
+      }
+    },
+    "Face-down card, column %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kartu tertutup, kolom %lld"
+          }
+        }
+      }
+    },
+    "Feedback": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umpan balik"
+          }
+        }
+      }
+    },
+    "Fewest Moves to Win": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah Menang tersedikit"
+          }
+        }
+      }
+    },
+    "Fill in the digits 1 through 9 without repeats in any row, column, or 3×3 box. You can’t change the given numbers. Use Notes to mark possible digits in empty cells. Errors flag duplicates without revealing the solution. Undo restores numbers and notes. Choose a difficulty under New Game.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Isi angka 1 sampai 9 tanpa duplikasi pada baris, kolom, atau kotak 3×3. Angka bawaan tidak dapat diubah. Mode Catatan mengubah kandidat manual di sel kosong. Penanda kesalahan hanya menunjukkan duplikasi, bukan jawaban dari solusi. Undo mengembalikan angka beserta catatan. Pilih kesulitan melalui Mulai Baru."
+          }
+        }
+      }
+    },
+    "Fill in the digits without repeats.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lengkapi angka tanpa duplikasi."
+          }
+        }
+      }
+    },
+    "Find Indonesian words.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temukan kata bahasa Indonesia."
+          }
+        }
+      }
+    },
+    "Flag Mode": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode Bendera"
+          }
+        }
+      }
+    },
+    "Flag Mode: On": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bendera: aktif"
+          }
+        }
+      }
+    },
+    "Flags %lld/%lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bendera %lld/%lld"
+          }
+        }
+      }
+    },
+    "Follow System": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ikuti Sistem"
+          }
+        }
+      }
+    },
+    "Foundation: %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fondasi %@"
+          }
+        }
+      }
+    },
+    "Game Haptics": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Getaran permainan"
+          }
+        }
+      }
+    },
+    "Game Paused": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi dijeda"
+          }
+        }
+      }
+    },
+    "Game Rules": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aturan Permainan"
+          }
+        }
+      }
+    },
+    "Guesses: %lld · Tap an answer letter to edit it.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld tebakan · tap huruf jawaban untuk mengeditnya."
+          }
+        }
+      }
+    },
+    "Hard": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sulit"
+          }
+        }
+      }
+    },
+    "High Score": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skor tertinggi"
+          }
+        }
+      }
+    },
+    "Highest Final Tile": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ubin terminal tertinggi"
+          }
+        }
+      }
+    },
+    "Intermediate": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menengah"
+          }
+        }
+      }
+    },
+    "Letter %@, tile %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huruf %@, keping %lld"
+          }
+        }
+      }
+    },
+    "Light": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terang"
+          }
+        }
+      }
+    },
+    "Longest Streak": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streak terpanjang"
+          }
+        }
+      }
+    },
+    "Losses": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalah"
+          }
+        }
+      }
+    },
+    "Lost": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalah"
+          }
+        }
+      }
+    },
+    "Medium": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sedang"
+          }
+        }
+      }
+    },
+    "Moves": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah"
+          }
+        }
+      }
+    },
+    "New Game": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mulai Baru"
+          }
+        }
+      }
+    },
+    "No record yet": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada rekor"
+          }
+        }
+      }
+    },
+    "No results yet": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada hasil"
+          }
+        }
+      }
+    },
+    "No sessions played yet.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum ada Sesi dimainkan."
+          }
+        }
+      }
+    },
+    "Not quite. Rearrange the letters and try again.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belum tepat. Susun hurufnya lagi."
+          }
+        }
+      }
+    },
+    "Notes": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catatan"
+          }
+        }
+      }
+    },
+    "Notes: On": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catatan: aktif"
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "nonaktif"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aktif"
+          }
+        }
+      }
+    },
+    "Opening OffPlay…": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membuka OffPlay…"
+          }
+        }
+      }
+    },
+    "Opens the game": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Membuka permainan langsung"
+          }
+        }
+      }
+    },
+    "Pause": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeda"
+          }
+        }
+      }
+    },
+    "Piece %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keping %lld"
+          }
+        }
+      }
+    },
+    "Pieces cannot be rotated.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keping tidak dapat diputar."
+          }
+        }
+      }
+    },
+    "Place pieces and clear lines.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Susun keping, bersihkan garis."
+          }
+        }
+      }
+    },
+    "Player Statistics": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistik Pemain"
+          }
+        }
+      }
+    },
+    "Progress is saved as you play.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progres tersimpan saat kamu bermain."
+          }
+        }
+      }
+    },
+    "Ready to play": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siap dimainkan"
+          }
+        }
+      }
+    },
+    "Recycle the stock": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Putar ulang stock"
+          }
+        }
+      }
+    },
+    "Resume": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lanjutkan"
+          }
+        }
+      }
+    },
+    "Resume Game · %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lanjutkan Sesi · %@"
+          }
+        }
+      }
+    },
+    "Reveal cells and avoid mines.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka petak, hindari ranjau."
+          }
+        }
+      }
+    },
+    "Row %lld, column %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baris %lld, kolom %lld"
+          }
+        }
+      }
+    },
+    "Row %lld, column %lld, %@": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baris %lld, kolom %lld, %@"
+          }
+        }
+      }
+    },
+    "Row %lld, column %lld, given number": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baris %lld, kolom %lld, angka bawaan"
+          }
+        }
+      }
+    },
+    "Rules": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aturan"
+          }
+        }
+      }
+    },
+    "Score": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skor"
+          }
+        }
+      }
+    },
+    "Scroll to reach more cells. Tap a revealed number to open its neighbors.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser untuk menjangkau petak. Tap angka terbuka untuk buka-serentak."
+          }
+        }
+      }
+    },
+    "Session ended": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi selesai"
+          }
+        }
+      }
+    },
+    "Sessions Completed": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi selesai"
+          }
+        }
+      }
+    },
+    "Sessions Reaching 2048": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi mencapai 2048"
+          }
+        }
+      }
+    },
+    "Sessions Started": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi dimulai"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan"
+          }
+        }
+      }
+    },
+    "Six games for your downtime.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enam permainan untuk waktu luangmu."
+          }
+        }
+      }
+    },
+    "Six offline games. Tap a game to pick up where you left off.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enam permainan offline. Tap Judul untuk langsung melanjutkan Sesi."
+          }
+        }
+      }
+    },
+    "Slide and merge tiles.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser dan gabungkan angka."
+          }
+        }
+      }
+    },
+    "Slide down": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser bawah"
+          }
+        }
+      }
+    },
+    "Slide left": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser kiri"
+          }
+        }
+      }
+    },
+    "Slide right": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser kanan"
+          }
+        }
+      }
+    },
+    "Slide up": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser atas"
+          }
+        }
+      }
+    },
+    "Start a new game?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mulai tantangan baru?"
+          }
+        }
+      }
+    },
+    "Stats and play time are stored on this device.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angka dan waktu bermain disimpan di perangkat ini."
+          }
+        }
+      }
+    },
+    "Submit Answer": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirim Jawaban"
+          }
+        }
+      }
+    },
+    "Sudoku boards: %lld · Letter groups: %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld papan Sudoku · %lld kelompok huruf"
+          }
+        }
+      }
+    },
+    "Swipe the board or use the direction buttons. Matching tiles merge once per move. After each valid move, a new tile appears. Earn points by merging tiles. Undo reverses a swipe and the new tile it spawned. Reaching 2048 doesn’t end the game: keep playing until no valid moves remain.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser papan atau gunakan tombol arah. Angka yang sama bergabung sekali per langkah. Sesudah gerakan sah, muncul satu ubin baru. Skor berasal dari penggabungan. Undo mengembalikan satu geseran beserta undian ubin. Mencapai 2048 bukan akhir permainan: terus bermain sampai tidak ada gerakan sah."
+          }
+        }
+      }
+    },
+    "Swipe the board, tap the direction buttons, or use the arrow keys.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geser papan, tombol arah, atau tombol panah keyboard."
+          }
+        }
+      }
+    },
+    "Tap a card, then its destination column or foundation.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap kartu, lalu kolom atau fondasi tujuan."
+          }
+        }
+      }
+    },
+    "Tap a face-up card, then its destination column or foundation. Build tableau columns in descending order, alternating colors. You can move a face-up sequence together. Only a king can fill an empty column. Build each suit’s foundation from ace to king. Draw one card at a time from the stock and recycle it as often as needed. Undo reverses one complete action. Complete all four foundations to win.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap kartu terbuka, lalu tap kolom atau fondasi tujuan. Tableau berurutan turun dengan warna bergantian; rangkaian terbuka dapat dipindah bersama. Hanya King mengisi kolom kosong. Fondasi per jenis dimulai dari Ace sampai King. Ambil satu kartu dari stock; putar ulang tanpa batas ketika habis. Undo mengembalikan satu tindakan lengkap. Selesaikan keempat fondasi untuk Menang."
+          }
+        }
+      }
+    },
+    "Tap a revealed number to open its neighbors.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap angka terbuka untuk buka-serentak."
+          }
+        }
+      }
+    },
+    "Tap letters to build an Indonesian word. Tap an answer slot to remove its letter. Submit when all slots are full. Any word in the game’s dictionary that uses every letter counts, including other valid anagrams. Edit your answer if it isn’t accepted. Solve one word to win.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap huruf untuk menyusun jawaban. Tap slot jawaban untuk mengeluarkan hurufnya. Kirim setelah semua slot terisi. Setiap kata dalam korpus yang memakai seluruh huruf diterima, termasuk anagram lain yang sah. Jawaban salah dapat diedit. Satu kata selesai berarti satu Sesi Menang."
+          }
+        }
+      }
+    },
+    "Tap to reveal a cell. Your first cell and its neighbors are safe. Numbers show how many mines are nearby. Use Flag Mode on covered cells. Tap a revealed number to open adjacent cells when it has the same number of neighboring flags. Incorrect flags can expose a mine. Reveal all safe cells to win. Scroll to reach cells that don’t fit on screen.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap untuk membuka petak. Pembukaan pertama dan tetangganya aman. Angka menunjukkan jumlah ranjau di sekitarnya. Gunakan mode Bendera pada petak tertutup. Tap angka terbuka untuk membuka tetangga ketika jumlah benderanya cocok; bendera yang salah bisa membuka ranjau. Menang ketika semua petak aman terbuka. Papan dapat digeser untuk menjangkau seluruh petak."
+          }
+        }
+      }
+    },
+    "That move isn’t allowed.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langkah belum dapat dilakukan."
+          }
+        }
+      }
+    },
+    "The save file uses version %lld, which this app doesn’t support.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simpanan memakai versi %lld yang belum didukung app ini."
+          }
+        }
+      }
+    },
+    "This session will be marked as abandoned. Your current board progress will be lost.": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesi ini akan dicatat sebagai Ditinggalkan. Progres papan saat ini tidak dipulihkan."
+          }
+        }
+      }
+    },
+    "Try Again": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coba Lagi"
+          }
+        }
+      }
+    },
+    "Try Saving Again": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coba Simpan Lagi"
+          }
+        }
+      }
+    },
+    "Used": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terpakai"
+          }
+        }
+      }
+    },
+    "Waste pile": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kartu waste"
+          }
+        }
+      }
+    },
+    "Wins": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menang"
+          }
+        }
+      }
+    },
+    "Won": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menang"
+          }
+        }
+      }
+    },
+    "Yes, Start New Game": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya, Mulai Baru"
+          }
+        }
+      }
+    },
+    "You reached 2048. Keep playing!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2048 tercapai. Kamu bisa terus bermain."
+          }
+        }
+      }
+    },
+    "available": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tersedia"
+          }
+        }
+      }
+    },
+    "clubs": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "keriting"
+          }
+        }
+      }
+    },
+    "covered": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tertutup"
+          }
+        }
+      }
+    },
+    "diamonds": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "wajik"
+          }
+        }
+      }
+    },
+    "empty": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kosong"
+          }
+        }
+      }
+    },
+    "exploded mine": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ranjau yang meledak"
+          }
+        }
+      }
+    },
+    "filled": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "terisi"
+          }
+        }
+      }
+    },
+    "flagged": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bendera"
+          }
+        }
+      }
+    },
+    "hearts": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hati"
+          }
+        }
+      }
+    },
+    "mine": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ranjau"
+          }
+        }
+      }
+    },
+    "revealed, nearby mines: %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "terbuka, %lld ranjau di sekitar"
+          }
+        }
+      }
+    },
+    "selected": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dipilih"
+          }
+        }
+      }
+    },
+    "spades": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sekop"
+          }
+        }
+      }
+    },
+    "used": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "terpakai"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

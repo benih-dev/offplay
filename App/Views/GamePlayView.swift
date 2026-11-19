@@ -12,15 +12,15 @@ struct GamePlayView: View {
                 VStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 10) {
                         if let result = session.outcome {
-                            Text(id == .game2048 ? "Sesi selesai" : result.name)
+                            Text(id == .game2048 ? String(localized: "Session ended") : result.localizedName)
                                 .font(.system(.title, design: .rounded).bold())
                                 .foregroundStyle(result == .won ? GameTheme.accent : GameTheme.ink)
                                 .accessibilityIdentifier("session.result")
                         }
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: textSize.isAccessibilitySize ? 260 : 135), spacing: 16)], alignment: .leading, spacing: 12) {
-                            if let score = session.state.score { MetricView(label: "Skor", value: String(score)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.score") }
-                            MetricView(label: "Waktu aktif", value: GameTheme.time(session.elapsed)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.time")
-                            if case let .klondike(game) = session.state { MetricView(label: "Langkah", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
+                            if let score = session.state.score { MetricView(label: "Score", value: String(score)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.score") }
+                            MetricView(label: "Active Time", value: GameTheme.time(session.elapsed)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.time")
+                            if case let .klondike(game) = session.state { MetricView(label: "Moves", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
                         }
                         if let feedback = store.feedback { Text(feedback).font(.footnote).foregroundStyle(GameTheme.danger).accessibilityIdentifier("session.feedback") }
                     }
@@ -42,9 +42,9 @@ struct GamePlayView: View {
                             .buttonStyle(ActionButtonStyle()).disabled(!session.state.canUndo || session.outcome != nil)
                             .accessibilityIdentifier("session.undo")
                     } else {
-                        Button("Aturan") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("session.rules")
+                        Button("Rules") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("session.rules")
                     }
-                    Button("Mulai Baru") { store.requestNewGame(id) }
+                    Button("New Game") { store.requestNewGame(id) }
                         .buttonStyle(ActionButtonStyle(primary: true)).accessibilityIdentifier("session.new")
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8).background(GameTheme.canvas)
@@ -54,7 +54,7 @@ struct GamePlayView: View {
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Jeda") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).accessibilityIdentifier("session.pause")
+                    Button("Pause") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).accessibilityIdentifier("session.pause")
                 }
             }
             .toolbar(.visible, for: .navigationBar)

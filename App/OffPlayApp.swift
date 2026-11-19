@@ -72,12 +72,12 @@ struct AppRootView: View {
         @Bindable var state = store
         Group {
             if store.loading {
-                ProgressView("Membuka OffPlay…").frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView("Opening OffPlay…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let error = store.loadError {
                 ContentUnavailableView {
-                    Label("Simpanan belum dapat dibuka", systemImage: "externaldrive")
+                    Label("Couldn’t open saved data", systemImage: "externaldrive")
                 } description: { Text(error) } actions: {
-                    Button("Coba Lagi") { store.load() }.buttonStyle(ActionButtonStyle(primary: true))
+                    Button("Try Again") { store.load() }.buttonStyle(ActionButtonStyle(primary: true))
                 }.padding()
             } else {
                 GameBoxView()
@@ -92,7 +92,7 @@ struct AppRootView: View {
             if let error = store.saveError {
                 VStack(spacing: 8) {
                     Text(error).font(.caption).foregroundStyle(GameTheme.danger)
-                    Button("Coba Simpan Lagi") { store.save() }.buttonStyle(ActionButtonStyle())
+                    Button("Try Saving Again") { store.save() }.buttonStyle(ActionButtonStyle())
                 }.padding().background(GameTheme.surface)
             }
         }
