@@ -151,7 +151,7 @@ public struct KlondikeGame: Codable, Equatable, Sendable {
         func valid(_ tableau: [[PlayingCard]], _ stock: [PlayingCard], _ waste: [PlayingCard], _ foundations: [[PlayingCard]]) -> Bool {
             let cards = tableau.flatMap { $0 } + stock + waste + foundations.flatMap { $0 }
             guard tableau.count == 7, foundations.count == 4, cards.count == 52,
-                  Set(cards.map(\.id)).count == 52, cards.allSatisfy({ (1...13).contains($0.rank) }),
+                  cards.allSatisfy({ (1...13).contains($0.rank) }), Set(cards.map(\.id)).count == 52,
                   stock.allSatisfy({ !$0.faceUp }), waste.allSatisfy(\.faceUp) else { return false }
             for suit in CardSuit.allCases {
                 if !foundations[suit.rawValue].enumerated().allSatisfy({ $0.element.suit == suit && $0.element.rank == $0.offset + 1 && $0.element.faceUp }) { return false }
