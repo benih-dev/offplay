@@ -3,6 +3,32 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func test2048RestartKeepsHighScore() throws {
+        let app = launch()
+        open("game2048", in: app)
+        for direction in ["left", "up", "right", "down", "left", "up"] {
+            app.buttons["slide.\(direction)"].tap()
+        }
+        let scoreLabel = app.descendants(matching: .any)["session.score"].label
+        let score = try XCTUnwrap(scoreLabel.split(whereSeparator: { !$0.isNumber }).last.flatMap { Int($0) })
+        XCTAssertGreaterThan(score, 0)
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "2048 earned score")
+        app.buttons["session.new"].tap()
+        app.buttons["new.confirm"].tap()
+        app.buttons["session.back"].tap()
+        app.buttons["catalog.statistics"].tap()
+        let terminalTile = app.staticTexts["Ubin terminal tertinggi"]
+        for _ in 0..<12 where !terminalTile.isHittable {
+            app.swipeUp(velocity: .slow)
+        }
+        XCTAssertTrue(terminalTile.isHittable)
+        let record = app.cells.containing(.staticText, identifier: "Skor tertinggi").firstMatch
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "2048 high score after restart")
+        XCTAssertTrue(record.staticTexts[String(score)].exists)
+    }
+
     @MainActor func testMinesweeperLossMarksExplodedMine() throws {
         let app = launch()
         open("minesweeper", in: app)

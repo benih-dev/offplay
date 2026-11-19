@@ -101,8 +101,8 @@ public struct GameStatistics: Codable, Equatable, Sendable {
             streak = outcome == .won ? streak + 1 : 0
             longestStreak = max(longestStreak, streak)
         }
-        guard outcome != .abandoned else { return }
         if let score = session.state.score { highScore = max(highScore ?? score, score) }
+        guard outcome != .abandoned else { return }
         if case let .game2048(game) = session.state {
             highestTile = max(highestTile ?? game.highestTile, game.highestTile)
             if game.reached2048 { target2048Count += 1 }
