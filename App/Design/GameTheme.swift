@@ -61,7 +61,7 @@ struct BoardButtonStyle: ButtonStyle {
 }
 
 struct MetricView: View {
-    let label: String
+    let label: LocalizedStringKey
     let value: String
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {

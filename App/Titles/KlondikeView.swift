@@ -12,7 +12,7 @@ struct KlondikeView: View {
     var body: some View {
         if case let .klondike(game)? = store.library.session(.klondike)?.state {
             VStack(spacing: 12) {
-                Text("Tap kartu, lalu kolom atau fondasi tujuan.").font(.footnote).foregroundStyle(GameTheme.secondary)
+                Text("Tap a card, then its destination column or foundation.").font(.footnote).foregroundStyle(GameTheme.secondary)
                 ScrollView(.horizontal) {
                   HStack(alignment: .top, spacing: 8) {
                     VStack(spacing: 4) {
@@ -23,13 +23,13 @@ struct KlondikeView: View {
                                 let changed = current.draw(); state = .klondike(current); return changed
                             }
                         } label: { CardFace(card: nil, placeholder: game.stock.isEmpty ? "↻" : "▤", selected: false, width: cardWidth, height: cardHeight) }
-                            .buttonStyle(BoardButtonStyle()).disabled(game.stock.isEmpty && game.waste.isEmpty).accessibilityLabel(game.stock.isEmpty ? "Putar ulang stock" : "Ambil kartu stock")
+                            .buttonStyle(BoardButtonStyle()).disabled(game.stock.isEmpty && game.waste.isEmpty).accessibilityLabel(game.stock.isEmpty ? LocalizedStringKey("Recycle the stock") : "Draw from the stock")
                             .accessibilityIdentifier("cards.stock")
                         Text(String(game.stock.count)).font(.caption2).frame(height: countHeight)
                     }
                     Button { selected = selected == .waste ? nil : .waste } label: {
                         CardFace(card: game.waste.last, placeholder: "", selected: selected == .waste, width: cardWidth, height: cardHeight)
-                    }.buttonStyle(BoardButtonStyle()).disabled(game.waste.isEmpty).accessibilityLabel("Kartu waste").accessibilityIdentifier("cards.waste")
+                    }.buttonStyle(BoardButtonStyle()).disabled(game.waste.isEmpty).accessibilityLabel("Waste pile").accessibilityIdentifier("cards.waste")
                     Spacer(minLength: 0)
                     ForEach(CardSuit.allCases, id: \.rawValue) { suit in
                         Button {
@@ -37,7 +37,7 @@ struct KlondikeView: View {
                             else if !game.foundations[suit.rawValue].isEmpty { selected = .foundation(suit) }
                         } label: {
                             CardFace(card: game.foundations[suit.rawValue].last, placeholder: suit.symbol, selected: selected == .foundation(suit), width: cardWidth, height: cardHeight)
-                        }.buttonStyle(BoardButtonStyle()).disabled(selected == nil && game.foundations[suit.rawValue].isEmpty).accessibilityLabel("Fondasi \(suit.name)").accessibilityIdentifier("cards.foundation.\(suit.rawValue)")
+                        }.buttonStyle(BoardButtonStyle()).disabled(selected == nil && game.foundations[suit.rawValue].isEmpty).accessibilityLabel("Foundation: \(suit.localizedName)").accessibilityIdentifier("cards.foundation.\(suit.rawValue)")
                     }
                 }
                 }.frame(height: cardHeight + countHeight + 8)
@@ -49,19 +49,19 @@ struct KlondikeView: View {
                                     Button {
                                         if let selected { move(selected, to: .tableau(column)) }
                                     } label: { CardFace(card: nil, placeholder: "K", selected: false, width: cardWidth, height: cardHeight) }
-                                        .buttonStyle(BoardButtonStyle()).disabled(selected == nil).accessibilityLabel("Kolom \(column + 1) kosong, hanya King")
+                                        .buttonStyle(BoardButtonStyle()).disabled(selected == nil).accessibilityLabel("Column \(column + 1) empty, kings only")
                                         .accessibilityIdentifier("cards.column.\(column)")
                                 }
                                 ForEach(Array(game.tableau[column].enumerated()), id: \.element.id) { index, card in
                                     if card.faceUp {
                                         Button { choose(column: column, index: index) } label: {
                                             CardFace(card: card, placeholder: "", selected: selected == .tableau(column: column, index: index), width: cardWidth, height: cardHeight)
-                                        }.buttonStyle(BoardButtonStyle()).accessibilityLabel("\(card.label) \(card.suit.name), kolom \(column + 1)")
+                                        }.buttonStyle(BoardButtonStyle()).accessibilityLabel("\(card.label) of \(card.suit.localizedName), column \(column + 1)")
                                             .accessibilityIdentifier("cards.tableau.\(column).\(index)")
                                     } else {
                                         RoundedRectangle(cornerRadius: 5).fill(GameTheme.accentFill).frame(width: cardWidth, height: hiddenHeight)
                                             .overlay(RoundedRectangle(cornerRadius: 5).stroke(GameTheme.line, lineWidth: 1))
-                                            .accessibilityElement().accessibilityLabel("Kartu tertutup, kolom \(column + 1)")
+                                            .accessibilityElement().accessibilityLabel("Face-down card, column \(column + 1)")
                                     }
                                 }
                             }.frame(width: cardWidth)

@@ -29,6 +29,30 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertEqual(record.label, String(score))
     }
 
+    @MainActor func testEnglishFallbackAndIndonesianLocalization() {
+        let app = launch(language: "fr")
+        XCTAssertTrue(app.staticTexts["Six games for your downtime."].exists)
+        open("minesweeper", in: app)
+        XCTAssertTrue(app.staticTexts["Beginner"].exists)
+        XCTAssertEqual(app.buttons["session.new"].label, "New Game")
+        app.buttons["session.back"].tap()
+        app.buttons["catalog.settings"].tap()
+        XCTAssertTrue(app.buttons["settings.theme.system"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons["settings.theme.system"].label, "Follow System")
+        app.terminate()
+
+        let indonesian = launch(language: "id")
+        XCTAssertTrue(indonesian.staticTexts["Enam permainan untuk waktu luangmu."].exists)
+        open("minesweeper", in: indonesian)
+        XCTAssertTrue(indonesian.staticTexts["Pemula"].exists)
+        XCTAssertTrue(indonesian.staticTexts["Bendera 0/10"].exists)
+        XCTAssertEqual(indonesian.buttons["session.new"].label, "Mulai Baru")
+        indonesian.buttons["session.back"].tap()
+        indonesian.buttons["catalog.settings"].tap()
+        XCTAssertTrue(indonesian.buttons["settings.theme.system"].waitForExistence(timeout: 5))
+        XCTAssertEqual(indonesian.buttons["settings.theme.system"].label, "Ikuti Sistem")
+    }
+
     @MainActor func testMinesweeperLossMarksExplodedMine() throws {
         let app = launch()
         open("minesweeper", in: app)
@@ -39,13 +63,13 @@ final class OffPlayUITests: XCTestCase {
         }
         game.reveal(at: 0)
         let mine = try XCTUnwrap(game.mines.sorted().first { app.buttons["mines.cell.\($0)"].isHittable })
-        XCTAssertFalse(app.buttons["mines.cell.\(mine)"].label.contains("meledak"))
+        XCTAssertFalse(app.buttons["mines.cell.\(mine)"].label.contains("exploded"))
         app.buttons["mines.cell.0"].tap()
         app.buttons["mines.cell.\(mine)"].tap()
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Kalah")
-        XCTAssertTrue(app.buttons["mines.cell.\(mine)"].label.contains("ranjau yang meledak"))
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Lost")
+        XCTAssertTrue(app.buttons["mines.cell.\(mine)"].label.contains("exploded mine"))
         let otherMine = try XCTUnwrap(game.mines.sorted().first { $0 != mine && app.buttons["mines.cell.\($0)"].exists })
-        XCTAssertTrue(app.buttons["mines.cell.\(otherMine)"].label.hasSuffix("ranjau"))
+        XCTAssertTrue(app.buttons["mines.cell.\(otherMine)"].label.hasSuffix("mine"))
     }
 
     @MainActor func testSettingsFollowSystemUpdatesOpenSheet() {
@@ -79,10 +103,10 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed, "Expected \(light ? "light" : "dark") appearance", file: file, line: line)
     }
 
-    @MainActor private func launch(reset: Bool = true, theme: String = "light") -> XCUIApplication {
+    @MainActor private func launch(reset: Bool = true, theme: String = "light", language: String = "en") -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-theme", theme] + (reset ? ["-reset-data"] : [])
+        app.launchArguments = ["-ui-testing", "-theme", theme, "-AppleLanguages", "(\(language))"] + (reset ? ["-reset-data"] : [])
         app.launch()
         XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
         return app
@@ -112,7 +136,7 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["session.back"].tap()
 
         open("sudoku", in: app)
-        let emptyCell = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'sudoku.cell.' AND value == 'kosong'")).firstMatch
+        let emptyCell = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'sudoku.cell.' AND value == 'empty'")).firstMatch
         XCTAssertTrue(emptyCell.exists)
         emptyCell.tap()
         app.buttons["sudoku.digit.1"].tap()
@@ -154,13 +178,13 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["session.undo"].tap()
         XCTAssertFalse(app.buttons["cards.waste"].isEnabled)
         app.buttons["cards.tableau.0.0"].tap()
-        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+        XCTAssertFalse(app.staticTexts["That move isn’t allowed."].exists)
         app.buttons["cards.tableau.0.0"].tap()
-        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+        XCTAssertFalse(app.staticTexts["That move isn’t allowed."].exists)
         app.buttons["cards.tableau.1.1"].tap()
         app.buttons["cards.tableau.5.5"].tap()
         XCTAssertTrue(app.buttons["cards.tableau.5.6"].exists)
-        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+        XCTAssertFalse(app.staticTexts["That move isn’t allowed."].exists)
     }
 
     @MainActor func testCancelNewGameAndRelaunchPreserveProgress() {
@@ -178,7 +202,7 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["pause.resume"].tap()
         app.buttons["session.back"].tap()
         app.terminate()
-        app.launchArguments = ["-ui-testing", "-theme", "light"]
+        app.launchArguments.removeAll { $0 == "-reset-data" }
         app.launch()
         XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
         open("blockGrid", in: app)
@@ -188,7 +212,7 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["session.score"].label.contains("0"))
         app.buttons["session.back"].tap()
         app.buttons["catalog.statistics"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label == 'Ditinggalkan'")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label == 'Abandoned'")).firstMatch.exists)
         app.buttons["stats.done"].tap()
     }
 
@@ -230,15 +254,15 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertTrue(submit.isEnabled)
         submit.tap()
         XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Menang")
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
         attach(app, name: "Word Scramble Result")
         app.buttons["session.back"].tap()
         app.terminate()
-        app.launchArguments = ["-ui-testing", "-theme", "light"]
+        app.launchArguments.removeAll { $0 == "-reset-data" }
         app.launch()
         XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
         open("wordScramble", in: app)
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Menang")
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
         app.buttons["session.new"].tap()
         XCTAssertFalse(app.buttons["new.confirm"].exists)
         XCTAssertFalse(app.staticTexts["session.result"].exists)
@@ -260,7 +284,7 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["new.mines.intermediate"].tap()
         if !app.buttons["new.confirm"].isHittable { app.swipeUp() }
         app.buttons["new.confirm"].tap()
-        XCTAssertTrue(app.staticTexts["Menengah"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Intermediate"].waitForExistence(timeout: 5))
         attach(app, name: "Minesweeper Intermediate")
         app.buttons["session.pause"].tap()
         app.buttons["pause.catalog"].tap()
@@ -269,7 +293,7 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["new.sudoku.hard"].tap()
         if !app.buttons["new.confirm"].isHittable { app.swipeUp() }
         app.buttons["new.confirm"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Sulit ·'")).firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Hard ·'")).firstMatch.waitForExistence(timeout: 5))
         attach(app, name: "Sudoku Hard")
     }
 
@@ -305,7 +329,7 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["new.mines.intermediate"].tap()
         if !app.buttons["new.confirm"].isHittable { app.swipeUp() }
         app.buttons["new.confirm"].tap()
-        XCTAssertTrue(app.staticTexts["Menengah"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Intermediate"].waitForExistence(timeout: 5))
         let first = app.buttons["mines.cell.0"]
         let second = app.buttons["mines.cell.1"]
         let last = app.buttons["mines.cell.15"]
@@ -313,12 +337,12 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertFalse(last.isHittable)
         app.buttons["mines.flagMode"].tap()
         first.tap()
-        XCTAssertTrue(first.label.contains("bendera"))
+        XCTAssertTrue(first.label.contains("flagged"))
         let board = app.scrollViews["board.viewport"]
         board.swipeLeft()
         XCTAssertTrue(last.isHittable)
         last.tap()
-        XCTAssertTrue(last.label.contains("bendera"))
+        XCTAssertTrue(last.label.contains("flagged"))
         print("BOARD MEASUREMENT mines 16 columns: 36.0pt on \(app.frame.width)pt screen (scrolling)")
     }
 

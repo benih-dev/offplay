@@ -12,13 +12,13 @@ struct MinesweeperView: View {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
             VStack(spacing: 10) {
                 HStack {
-                    Text(game.difficulty.name).font(.subheadline)
+                    Text(game.difficulty.localizedName).font(.subheadline)
                     Spacer()
-                    Text("Bendera \(game.flags.count)/\(game.mineCount)").font(.subheadline).monospacedDigit()
+                    Text("Flags \(game.flags.count)/\(game.mineCount)").font(.subheadline).monospacedDigit()
                 }
-                Button { flagMode.toggle() } label: { Label(flagMode ? "Bendera: aktif" : "Mode Bendera", systemImage: "flag") }
+                Button { flagMode.toggle() } label: { Label(flagMode ? LocalizedStringKey("Flag Mode: On") : "Flag Mode", systemImage: "flag") }
                     .buttonStyle(ActionButtonStyle(primary: flagMode)).accessibilityIdentifier("mines.flagMode")
-                    .accessibilityValue(flagMode ? "aktif" : "nonaktif")
+                    .accessibilityValue(flagMode ? LocalizedStringKey("On") : "Off")
                 FittedBoard(columns: game.side, preferredCellSize: size, onOverflowChange: { boardOverflows = $0 }) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: game.side), spacing: 0) {
                         ForEach(0..<(game.side * game.side), id: \.self) { index in
@@ -30,12 +30,12 @@ struct MinesweeperView: View {
                                     .overlay(Rectangle().stroke(GameTheme.line, lineWidth: 1))
                             }
                             .buttonStyle(BoardButtonStyle())
-                            .accessibilityLabel("Baris \(index / game.side + 1), kolom \(index % game.side + 1), \(description(game, index))")
+                            .accessibilityLabel("Row \(index / game.side + 1), column \(index % game.side + 1), \(description(game, index))")
                             .accessibilityIdentifier("mines.cell.\(index)")
                         }
                     }.frame(width: size * CGFloat(game.side))
                 }
-                Text((boardOverflows ? "Geser untuk menjangkau petak. " : "") + "Tap angka terbuka untuk buka-serentak.").font(.caption).foregroundStyle(GameTheme.secondary)
+                Text(boardOverflows ? LocalizedStringKey("Scroll to reach more cells. Tap a revealed number to open its neighbors.") : "Tap a revealed number to open its neighbors.").font(.caption).foregroundStyle(GameTheme.secondary)
             }
         }
     }
@@ -54,11 +54,11 @@ struct MinesweeperView: View {
         return "·"
     }
     private func description(_ game: MinesweeperGame, _ index: Int) -> String {
-        if game.exploded == index { return "ranjau yang meledak" }
-        if game.isFinished && game.mines.contains(index) { return "ranjau" }
-        if game.flags.contains(index) { return "bendera" }
-        if game.revealed.contains(index) { return "terbuka, \(game.adjacentMines(at: index)) ranjau di sekitar" }
-        return "tertutup"
+        if game.exploded == index { return String(localized: "exploded mine") }
+        if game.isFinished && game.mines.contains(index) { return String(localized: "mine") }
+        if game.flags.contains(index) { return String(localized: "flagged") }
+        if game.revealed.contains(index) { return String(localized: "revealed, nearby mines: \(game.adjacentMines(at: index))") }
+        return String(localized: "covered")
     }
     private func foreground(_ game: MinesweeperGame, _ index: Int) -> Color {
         if game.exploded == index { return GameTheme.canvas }

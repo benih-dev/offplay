@@ -9,60 +9,60 @@ struct StatisticsView: View {
                 ForEach(GameID.allCases) { id in
                     let stats = store.library.stats(id)
                     Section(id.name) {
-                        if stats.total.started == 0 { Text("Belum ada Sesi dimainkan.").foregroundStyle(GameTheme.secondary).accessibilityIdentifier("stats.empty.\(id.rawValue)") }
-                        stat("Sesi dimulai", String(stats.total.started))
-                        stat("Sesi selesai", String(stats.total.completed))
-                        stat("Ditinggalkan", String(stats.total.abandoned))
-                        stat("Waktu aktif", GameTheme.time(stats.total.activeTime))
+                        if stats.total.started == 0 { Text("No sessions played yet.").foregroundStyle(GameTheme.secondary).accessibilityIdentifier("stats.empty.\(id.rawValue)") }
+                        stat("Sessions Started", String(stats.total.started))
+                        stat("Sessions Completed", String(stats.total.completed))
+                        stat("Abandoned", String(stats.total.abandoned))
+                        stat("Active Time", GameTheme.time(stats.total.activeTime))
                         switch id {
                         case .blockGrid, .game2048:
-                            stat("Skor tertinggi", stats.total.highScore.map(String.init) ?? "Belum ada rekor", id: "stats.\(id.rawValue).highScore")
+                            stat("High Score", stats.total.highScore.map(String.init) ?? String(localized: "No record yet"), id: "stats.\(id.rawValue).highScore")
                             if id == .game2048 {
-                                stat("Ubin terminal tertinggi", stats.total.highestTile.map(String.init) ?? "Belum ada rekor", id: "stats.game2048.highestTile")
-                                stat("Sesi mencapai 2048", String(stats.total.target2048Count))
+                                stat("Highest Final Tile", stats.total.highestTile.map(String.init) ?? String(localized: "No record yet"), id: "stats.game2048.highestTile")
+                                stat("Sessions Reaching 2048", String(stats.total.target2048Count))
                             }
                         case .klondike:
-                            stat("Menang", String(stats.total.won))
+                            stat("Wins", String(stats.total.won))
                             bestTime(stats.total)
-                            stat("Langkah Menang tersedikit", stats.total.fewestMoves.map(String.init) ?? "Belum ada rekor")
+                            stat("Fewest Moves to Win", stats.total.fewestMoves.map(String.init) ?? String(localized: "No record yet"))
                         case .sudoku:
                             ForEach(SudokuDifficulty.allCases) { level in
-                                group(level.name, stats.groups[level.rawValue] ?? GameStatistics(), mines: false)
+                                group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: false)
                             }
                         case .minesweeper:
                             ForEach(MineDifficulty.allCases) { level in
-                                group(level.name, stats.groups[level.rawValue] ?? GameStatistics(), mines: true)
+                                group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: true)
                             }
                         case .wordScramble:
                             ForEach(4...8, id: \.self) { length in
-                                group("\(length) huruf", stats.groups[String(length)] ?? GameStatistics(), mines: false)
+                                group(Text("\(length) letters"), stats.groups[String(length)] ?? GameStatistics(), mines: false)
                             }
                         }
                     }.listRowBackground(GameTheme.surface)
                 }
             }
             .scrollContentBackground(.hidden).background(GameTheme.canvas).foregroundStyle(GameTheme.ink)
-            .navigationTitle("Statistik Pemain").navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Selesai") { store.modal = nil }.frame(minHeight: 48).keyboardShortcut(.cancelAction).accessibilityIdentifier("stats.done") }
+            .navigationTitle("Player Statistics").navigationBarTitleDisplayMode(.inline)
+            .toolbar { Button("Done") { store.modal = nil }.frame(minHeight: 48).keyboardShortcut(.cancelAction).accessibilityIdentifier("stats.done") }
         }
     }
 
-    private func stat(_ name: String, _ value: String, id: String? = nil) -> some View {
+    private func stat(_ name: LocalizedStringKey, _ value: String, id: String? = nil) -> some View {
         HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing).accessibilityIdentifier(id ?? "") }
     }
     private func bestTime(_ stats: GameStatistics) -> some View {
-        stat("Waktu Menang terbaik", stats.bestTime.map(GameTheme.time) ?? "Belum ada rekor")
+        stat("Best Winning Time", stats.bestTime.map(GameTheme.time) ?? String(localized: "No record yet"))
     }
-    private func group(_ name: String, _ stats: GameStatistics, mines: Bool) -> some View {
+    private func group(_ name: Text, _ stats: GameStatistics, mines: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(name).font(.headline).foregroundStyle(GameTheme.accent)
-            stat("Menang", String(stats.won))
+            name.font(.headline).foregroundStyle(GameTheme.accent)
+            stat("Wins", String(stats.won))
             bestTime(stats)
             if mines {
-                stat("Kalah", String(stats.lost))
-                stat("Win rate", stats.winRate.map { String(format: "%.0f%%", $0 * 100) } ?? "Belum ada hasil")
+                stat("Losses", String(stats.lost))
+                stat("Win rate", stats.winRate.map { String(format: "%.0f%%", $0 * 100) } ?? String(localized: "No results yet"))
                 stat("Streak", String(stats.streak))
-                stat("Streak terpanjang", String(stats.longestStreak))
+                stat("Longest Streak", String(stats.longestStreak))
             }
         }.padding(.vertical, 8)
     }

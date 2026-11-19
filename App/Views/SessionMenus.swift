@@ -6,14 +6,14 @@ struct PauseMenuView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Sesi dijeda").font(.system(.title2, design: .rounded).bold())
+                Text("Game Paused").font(.system(.title2, design: .rounded).bold())
                 if let id = store.activeID {
                     Text("\(id.name) · \(GameTheme.time(store.library.session(id)?.elapsed ?? 0))").foregroundStyle(GameTheme.secondary).accessibilityIdentifier("pause.time")
-                    Button("Lanjutkan") { store.modal = nil }.buttonStyle(ActionButtonStyle(primary: true)).keyboardShortcut(.cancelAction).accessibilityIdentifier("pause.resume")
-                    Button("Mulai Baru") { store.requestNewGame(id) }.buttonStyle(ActionButtonStyle())
-                    Button("Aturan Permainan") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("pause.rules")
+                    Button("Resume") { store.modal = nil }.buttonStyle(ActionButtonStyle(primary: true)).keyboardShortcut(.cancelAction).accessibilityIdentifier("pause.resume")
+                    Button("New Game") { store.requestNewGame(id) }.buttonStyle(ActionButtonStyle())
+                    Button("Game Rules") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("pause.rules")
                 }
-                Button("Ke Game Box") { store.leaveGame() }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("pause.catalog")
+                Button("Back to Game Box") { store.leaveGame() }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("pause.catalog")
             }.padding(24)
         }
         .foregroundStyle(GameTheme.ink).background(GameTheme.canvas)
@@ -35,26 +35,26 @@ struct NewGameView: View {
         let abandoning = store.library.session(id).map { $0.hasStarted && $0.outcome == nil } ?? false
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Mulai tantangan baru?").font(.system(.title2, design: .rounded).bold())
+                Text("Start a new game?").font(.system(.title2, design: .rounded).bold())
                 if abandoning {
-                    Text("Sesi ini akan dicatat sebagai Ditinggalkan. Progres papan saat ini tidak dipulihkan.").foregroundStyle(GameTheme.secondary)
+                    Text("This session will be marked as abandoned. Your current board progress will be lost.").foregroundStyle(GameTheme.secondary)
                 }
                 if id == .sudoku {
                     ForEach(SudokuDifficulty.allCases) { level in
                         Button { sudoku = level } label: {
-                            HStack { Text(level.name); Spacer(); if sudoku == level { Image(systemName: "checkmark") } }
+                            HStack { Text(level.localizedName); Spacer(); if sudoku == level { Image(systemName: "checkmark") } }
                         }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("new.sudoku.\(level.rawValue)")
                     }
                 } else if id == .minesweeper {
                     ForEach(MineDifficulty.allCases) { level in
                         Button { mines = level } label: {
-                            HStack { Text("\(level.name) · \(level.side)×\(level.side)"); Spacer(); if mines == level { Image(systemName: "checkmark") } }
+                            HStack { Text("\(level.localizedName) · \(level.side)×\(level.side)"); Spacer(); if mines == level { Image(systemName: "checkmark") } }
                         }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("new.mines.\(level.rawValue)")
                     }
                 }
-                Button(abandoning ? "Ya, Mulai Baru" : "Mulai Baru") { store.newGame(id, sudoku: sudoku, mines: mines) }
+                Button(abandoning ? LocalizedStringKey("Yes, Start New Game") : "New Game") { store.newGame(id, sudoku: sudoku, mines: mines) }
                     .buttonStyle(ActionButtonStyle(primary: true, destructive: abandoning)).accessibilityIdentifier("new.confirm")
-                Button("Batal") { store.modal = nil }.buttonStyle(ActionButtonStyle()).keyboardShortcut(.cancelAction).accessibilityIdentifier("new.cancel")
+                Button("Cancel") { store.modal = nil }.buttonStyle(ActionButtonStyle()).keyboardShortcut(.cancelAction).accessibilityIdentifier("new.cancel")
             }.padding(24)
         }
         .foregroundStyle(GameTheme.ink).background(GameTheme.canvas)
@@ -70,18 +70,18 @@ struct RulesView: View {
             ScrollView {
                 Text(rules).font(.body).frame(maxWidth: .infinity, alignment: .leading).padding(24)
             }.background(GameTheme.canvas).foregroundStyle(GameTheme.ink)
-                .navigationTitle("Aturan \(id.name)").navigationBarTitleDisplayMode(.inline)
-                .toolbar { Button("Selesai") { store.modal = nil }.frame(minHeight: 48).keyboardShortcut(.cancelAction).accessibilityIdentifier("rules.done") }
+                .navigationTitle("\(id.name) Rules").navigationBarTitleDisplayMode(.inline)
+                .toolbar { Button("Done") { store.modal = nil }.frame(minHeight: 48).keyboardShortcut(.cancelAction).accessibilityIdentifier("rules.done") }
         }
     }
-    private var rules: String {
+    private var rules: LocalizedStringKey {
         switch id {
-        case .blockGrid: "Pilih keping dari baki, lalu tap petak untuk pojok kiri atas keping. Keping tidak dapat diputar. Baris dan kolom penuh dibersihkan bersamaan. Skor: satu poin per sel keping ditambah 10 per garis. Baki baru muncul sesudah ketiga keping terpakai. Sesi berakhir ketika tidak ada keping tersisa yang dapat diletakkan."
-        case .klondike: "Tap kartu terbuka, lalu tap kolom atau fondasi tujuan. Tableau berurutan turun dengan warna bergantian; rangkaian terbuka dapat dipindah bersama. Hanya King mengisi kolom kosong. Fondasi per jenis dimulai dari Ace sampai King. Ambil satu kartu dari stock; putar ulang tanpa batas ketika habis. Undo mengembalikan satu tindakan lengkap. Selesaikan keempat fondasi untuk Menang."
-        case .sudoku: "Isi angka 1 sampai 9 tanpa duplikasi pada baris, kolom, atau kotak 3×3. Angka bawaan tidak dapat diubah. Mode Catatan mengubah kandidat manual di sel kosong. Penanda kesalahan hanya menunjukkan duplikasi, bukan jawaban dari solusi. Undo mengembalikan angka beserta catatan. Pilih kesulitan melalui Mulai Baru."
-        case .game2048: "Geser papan atau gunakan tombol arah. Angka yang sama bergabung sekali per langkah. Sesudah gerakan sah, muncul satu ubin baru. Skor berasal dari penggabungan. Undo mengembalikan satu geseran beserta undian ubin. Mencapai 2048 bukan akhir permainan: terus bermain sampai tidak ada gerakan sah."
-        case .minesweeper: "Tap untuk membuka petak. Pembukaan pertama dan tetangganya aman. Angka menunjukkan jumlah ranjau di sekitarnya. Gunakan mode Bendera pada petak tertutup. Tap angka terbuka untuk membuka tetangga ketika jumlah benderanya cocok; bendera yang salah bisa membuka ranjau. Menang ketika semua petak aman terbuka. Papan dapat digeser untuk menjangkau seluruh petak."
-        case .wordScramble: "Tap huruf untuk menyusun jawaban. Tap slot jawaban untuk mengeluarkan hurufnya. Kirim setelah semua slot terisi. Setiap kata dalam korpus yang memakai seluruh huruf diterima, termasuk anagram lain yang sah. Jawaban salah dapat diedit. Satu kata selesai berarti satu Sesi Menang."
+        case .blockGrid: "Choose a piece from the tray, then tap the cell where its top-left corner should go. Pieces cannot be rotated. Full rows and columns clear together. You get one point per cell placed and 10 per line cleared. A new tray appears after you use all three pieces. The game ends when none of the remaining pieces fit."
+        case .klondike: "Tap a face-up card, then its destination column or foundation. Build tableau columns in descending order, alternating colors. You can move a face-up sequence together. Only a king can fill an empty column. Build each suit’s foundation from ace to king. Draw one card at a time from the stock and recycle it as often as needed. Undo reverses one complete action. Complete all four foundations to win."
+        case .sudoku: "Fill in the digits 1 through 9 without repeats in any row, column, or 3×3 box. You can’t change the given numbers. Use Notes to mark possible digits in empty cells. Errors flag duplicates without revealing the solution. Undo restores numbers and notes. Choose a difficulty under New Game."
+        case .game2048: "Swipe the board or use the direction buttons. Matching tiles merge once per move. After each valid move, a new tile appears. Earn points by merging tiles. Undo reverses a swipe and the new tile it spawned. Reaching 2048 doesn’t end the game: keep playing until no valid moves remain."
+        case .minesweeper: "Tap to reveal a cell. Your first cell and its neighbors are safe. Numbers show how many mines are nearby. Use Flag Mode on covered cells. Tap a revealed number to open adjacent cells when it has the same number of neighboring flags. Incorrect flags can expose a mine. Reveal all safe cells to win. Scroll to reach cells that don’t fit on screen."
+        case .wordScramble: "Tap letters to build an Indonesian word. Tap an answer slot to remove its letter. Submit when all slots are full. Any word in the game’s dictionary that uses every letter counts, including other valid anagrams. Edit your answer if it isn’t accepted. Solve one word to win."
         }
     }
 }
