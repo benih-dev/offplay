@@ -68,6 +68,19 @@ final class GameRulesTests: XCTestCase {
         XCTAssertEqual(game.moves, 0)
     }
 
+    func testKlondikeArchiveRejectsOutOfRangeRanks() {
+        let deck = CardSuit.allCases.flatMap { suit in (1...13).map { PlayingCard(suit: suit, rank: $0) } }
+        let columns = Array(repeating: [PlayingCard](), count: 7)
+        XCTAssertTrue(KlondikeGame(tableau: columns, stock: deck).validForArchive)
+        for suit in CardSuit.allCases {
+            for rank in [Int.min, -1, 0, 14, Int.max] {
+                var cards = deck
+                cards[suit.rawValue * 13] = PlayingCard(suit: suit, rank: rank)
+                XCTAssertFalse(KlondikeGame(tableau: columns, stock: cards).validForArchive, "\(suit): \(rank)")
+            }
+        }
+    }
+
     func testStockRecyclePreservesOrder() {
         let cards = (1...3).map { PlayingCard(suit: .clubs, rank: $0) }
         var game = KlondikeGame(tableau: Array(repeating: [], count: 7), stock: cards)
@@ -263,6 +276,34 @@ final class SessionTests: XCTestCase {
         let store = LibraryFileStore(url: directory.appendingPathComponent("save.json"))
         try store.save(library)
         XCTAssertEqual(try store.load()?.library, library)
+    }
+
+    func testCorruptKlondikeRankRestoresBackup() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = LibraryFileStore(url: directory.appendingPathComponent("save.json"))
+        var backup = GameLibrary(seed: 1)
+        backup.ensureSession(.klondike, content: smallContent)
+        try store.save(backup)
+        var primary = backup; primary.appearance = .dark
+        try store.save(primary)
+        let valid = try XCTUnwrap(try store.load())
+        XCTAssertFalse(valid.usedBackup)
+        XCTAssertEqual(valid.library, primary)
+
+        var json = try String(contentsOf: store.url, encoding: .utf8)
+        let suit = CardSuit.hearts.rawValue
+        let aceOfHearts = try XCTUnwrap(json.range(of: "\"rank\":1,\"suit\":\(suit)"))
+        json.replaceSubrange(aceOfHearts, with: "\"rank\":\(Int.max),\"suit\":\(suit)")
+        try Data(json.utf8).write(to: store.url)
+
+        let recovered = try XCTUnwrap(try store.load())
+        XCTAssertTrue(recovered.usedBackup)
+        XCTAssertEqual(recovered.library, backup)
+        try FileManager.default.removeItem(at: store.backupURL)
+        XCTAssertThrowsError(try store.load()) { error in
+            guard case SaveFileError.invalid = error else { return XCTFail("Unexpected error: \(error)") }
+        }
     }
 
     func testBundledContentMeetsSupplyAndSolvabilityTargets() throws {
