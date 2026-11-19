@@ -69,6 +69,7 @@ struct KlondikeView: View {
                     }
                 }
             }
+            .onChange(of: game) { selected = nil }
         }
     }
 

@@ -69,6 +69,23 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Word Scramble")
     }
 
+    @MainActor func testKlondikeUndoClearsWasteSelection() {
+        let app = launch()
+        open("klondike", in: app)
+        app.buttons["cards.stock"].tap()
+        app.buttons["cards.waste"].tap()
+        app.buttons["session.undo"].tap()
+        XCTAssertFalse(app.buttons["cards.waste"].isEnabled)
+        app.buttons["cards.tableau.0.0"].tap()
+        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+        app.buttons["cards.tableau.0.0"].tap()
+        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+        app.buttons["cards.tableau.1.1"].tap()
+        app.buttons["cards.tableau.5.5"].tap()
+        XCTAssertTrue(app.buttons["cards.tableau.5.6"].exists)
+        XCTAssertFalse(app.staticTexts["Langkah belum dapat dilakukan."].exists)
+    }
+
     @MainActor func testCancelNewGameAndRelaunchPreserveProgress() {
         let app = launch()
         open("blockGrid", in: app)
