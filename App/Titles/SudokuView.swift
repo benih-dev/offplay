@@ -13,7 +13,7 @@ struct SudokuView: View {
             let duplicates = game.duplicateCells
             VStack(spacing: 10) {
                 Text("\(game.puzzle.difficulty.name) · tap sel kosong untuk mengisi").font(.footnote).foregroundStyle(GameTheme.secondary)
-                BoardViewport(height: size * 9 + 16) {
+                FittedBoard(columns: 9, preferredCellSize: size) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: 9), spacing: 0) {
                         ForEach(0..<81, id: \.self) { index in
                             SudokuCellView(index: index, size: size, value: game.values[index], notes: game.notes[index], given: game.puzzle.givens[index] > 0, selected: selected == index, duplicate: duplicates.contains(index)) { selected = index }

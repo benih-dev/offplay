@@ -72,6 +72,38 @@ struct MetricView: View {
     }
 }
 
+struct FittedBoard<Content: View>: View {
+    let columns: Int
+    let preferredCellSize: CGFloat
+    var onOverflowChange: (Bool) -> Void = { _ in }
+    @ViewBuilder let content: (CGFloat) -> Content
+    @State private var availableWidth: CGFloat = 0
+
+    private var cellSize: CGFloat {
+        floor(min(preferredCellSize, max(36, (availableWidth - 16) / CGFloat(columns))))
+    }
+
+    private var isOverflowing: Bool {
+        cellSize * CGFloat(columns) + 16 > availableWidth
+    }
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            content(cellSize)
+                .frame(minWidth: max(0, availableWidth - 16))
+                .padding(8)
+        }
+            .scrollDisabled(!isOverflowing)
+            .accessibilityIdentifier("board.viewport")
+            .frame(height: cellSize * CGFloat(columns) + 16)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
+            .onChange(of: isOverflowing, initial: true) { onOverflowChange(isOverflowing) }
+            .background(GameTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameTheme.line, lineWidth: 1))
+    }
+}
+
 struct BoardViewport<Content: View>: View {
     let height: CGFloat
     @ViewBuilder let content: () -> Content

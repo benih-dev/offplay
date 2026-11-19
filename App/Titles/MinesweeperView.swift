@@ -5,6 +5,7 @@ struct MinesweeperView: View {
     @Environment(AppStore.self) private var store
     @Environment(\.dynamicTypeSize) private var textSize
     @State private var flagMode = false
+    @State private var boardOverflows = false
 
     var body: some View {
         if case let .minesweeper(game)? = store.library.session(.minesweeper)?.state {
@@ -18,7 +19,7 @@ struct MinesweeperView: View {
                 Button { flagMode.toggle() } label: { Label(flagMode ? "Bendera: aktif" : "Mode Bendera", systemImage: "flag") }
                     .buttonStyle(ActionButtonStyle(primary: flagMode)).accessibilityIdentifier("mines.flagMode")
                     .accessibilityValue(flagMode ? "aktif" : "nonaktif")
-                BoardViewport(height: size * CGFloat(game.side) + 16) {
+                FittedBoard(columns: game.side, preferredCellSize: size, onOverflowChange: { boardOverflows = $0 }) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: game.side), spacing: 0) {
                         ForEach(0..<(game.side * game.side), id: \.self) { index in
                             Button { open(index) } label: {
@@ -34,7 +35,7 @@ struct MinesweeperView: View {
                         }
                     }.frame(width: size * CGFloat(game.side))
                 }
-                Text("Geser untuk menjangkau petak. Tap angka terbuka untuk buka-serentak.").font(.caption).foregroundStyle(GameTheme.secondary)
+                Text((boardOverflows ? "Geser untuk menjangkau petak. " : "") + "Tap angka terbuka untuk buka-serentak.").font(.caption).foregroundStyle(GameTheme.secondary)
             }
         }
     }
