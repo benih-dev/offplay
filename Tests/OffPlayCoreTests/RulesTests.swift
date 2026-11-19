@@ -241,6 +241,43 @@ final class SessionTests: XCTestCase {
         XCTAssertThrowsError(try store.load())
     }
 
+    func testOutOfRangeSavedTimesAreRejectedOnLoad() throws {
+        var library = GameLibrary(seed: 3)
+        library.ensureSession(.game2048, content: smallContent)
+        _ = library.act(on: .game2048) { state in
+            guard case var .game2048(game) = state else { return false }
+            let changed = game.slide(.down); state = .game2048(game); return changed
+        }
+        library.addActiveTime(5, to: .game2048)
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = LibraryFileStore(url: directory.appendingPathComponent("save.json"))
+        try store.save(library)
+        let saved = try String(contentsOf: store.url, encoding: .utf8)
+        for field in ["\"elapsed\":5", "\"activeTime\":5"] {
+            XCTAssertTrue(saved.contains(field))
+            try saved.replacingOccurrences(of: field, with: field.dropLast() + "1e20").write(to: store.url, atomically: true, encoding: .utf8)
+            XCTAssertThrowsError(try store.load(), field)
+        }
+    }
+
+    func testActiveTimeStaysWithinSavableRange() throws {
+        var library = GameLibrary(seed: 4)
+        library.ensureSession(.game2048, content: smallContent)
+        _ = library.act(on: .game2048) { state in
+            guard case var .game2048(game) = state else { return false }
+            let changed = game.slide(.down); state = .game2048(game); return changed
+        }
+        library.addActiveTime(1e20, to: .game2048)
+        XCTAssertLessThan(try XCTUnwrap(library.session(.game2048)).elapsed, 1e20)
+        XCTAssertLessThan(library.stats(.game2048).total.activeTime, 1e20)
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = LibraryFileStore(url: directory.appendingPathComponent("save.json"))
+        try store.save(library)
+        XCTAssertEqual(try store.load()?.library, library)
+    }
+
     func testCorruptKlondikeRankRestoresBackup() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
