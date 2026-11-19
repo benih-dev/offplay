@@ -1,7 +1,39 @@
 import XCTest
 import OffPlayCore
+import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testSettingsFollowSystemUpdatesOpenSheet() {
+        let app = launch(theme: "dark")
+        app.buttons["catalog.settings"].tap()
+        XCTAssertTrue(app.buttons["settings.theme.system"].waitForExistence(timeout: 5))
+        assertAppearance(in: app, light: false)
+        app.buttons["settings.theme.system"].tap()
+        assertAppearance(in: app, light: true)
+        app.buttons["settings.theme.dark"].tap()
+        assertAppearance(in: app, light: false)
+        app.buttons["settings.theme.light"].tap()
+        assertAppearance(in: app, light: true)
+        app.buttons["settings.done"].tap()
+        assertAppearance(in: app, light: true)
+    }
+
+    @MainActor private func assertAppearance(in app: XCUIApplication, light: Bool, file: StaticString = #filePath, line: UInt = #line) {
+        let matches = NSPredicate { _, _ in
+            guard let image = app.screenshot().image.cgImage else { return false }
+            var pixel = [UInt8](repeating: 0, count: 4)
+            let brightness = pixel.withUnsafeMutableBytes { bytes -> Double in
+                guard let context = CGContext(data: bytes.baseAddress, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return 0 }
+                context.interpolationQuality = .high
+                context.draw(image, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+                return Double(bytes[0]) / 255
+            }
+            return light ? brightness > 0.5 : brightness < 0.5
+        }
+        let expectation = XCTNSPredicateExpectation(predicate: matches, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed, "Expected \(light ? "light" : "dark") appearance", file: file, line: line)
+    }
+
     @MainActor private func launch(reset: Bool = true, theme: String = "light") -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
