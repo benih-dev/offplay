@@ -8,61 +8,21 @@ struct GamePlayView: View {
 
     var body: some View {
         if let session = store.library.session(id) {
-            ScrollView(.vertical) {
-                VStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        if let result = session.outcome {
-                            Text(id.localizedOutcome(result))
-                                .font(.system(.title, design: .rounded).bold())
-                                .foregroundStyle(result == .won ? GameTheme.accent : GameTheme.ink)
-                                .accessibilityIdentifier("session.result")
-                        }
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: textSize.isAccessibilitySize ? 260 : 135), spacing: 16)], alignment: .leading, spacing: 12) {
-                            if let score = session.state.score { MetricView(label: "Score", value: String(score)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.score") }
-                            MetricView(label: "Active Time", value: GameTheme.time(session.elapsed)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.time")
-                            if case let .klondike(game) = session.state { MetricView(label: "Moves", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
-                        }
-                        ZStack(alignment: .topLeading) {
-                            ForEach(GameFeedback.allCases, id: \.self) { feedback in
-                                Text(feedback.localizedMessage).hidden()
-                            }
-                            if let feedback = store.feedback {
-                                Text(feedback.localizedMessage)
-                                    .foregroundStyle(GameTheme.danger)
-                                    .accessibilityIdentifier("session.feedback")
-                            }
-                        }
-                        .font(.footnote)
-                        .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    GameCatalog.board(id).id(session.id).disabled(session.outcome != nil)
-                        .accessibilityElement(children: .contain)
-                        .accessibilityIdentifier("session.board")
+            ViewThatFits(in: .vertical) {
+                VStack(spacing: 0) {
+                    gameplay(session).fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                    footer(session)
                 }
-                .padding(.horizontal, 12).padding(.vertical, 12)
-            }
-            .safeAreaInset(edge: .bottom) {
-                HStack(spacing: 10) {
-                    Button { store.leaveGame() } label: {
-                        Image(systemName: "house").frame(width: 48, height: 48)
+                ScrollView(.vertical) {
+                    VStack(spacing: 0) {
+                        gameplay(session)
+                        footer(session)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(GameTheme.accent)
-                    .accessibilityLabel("Game Box").accessibilityIdentifier("session.back")
-                    if [.klondike, .sudoku, .game2048].contains(id) {
-                        Button("Undo") { store.undo(id) }
-                            .buttonStyle(ActionButtonStyle()).disabled(!session.state.canUndo || session.outcome != nil)
-                            .accessibilityIdentifier("session.undo")
-                    } else {
-                        Button("Rules") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("session.rules")
-                    }
-                    Button("New Game") { store.requestNewGame(id) }
-                        .buttonStyle(ActionButtonStyle(primary: true)).accessibilityIdentifier("session.new")
                 }
-                .padding(.horizontal, 12).padding(.vertical, 8).background(GameTheme.canvas)
             }
-            .background(GameTheme.canvas)
+            .background(GameMenuTheme.canvas)
+            .environment(\.gameplayGame, id)
             .onChange(of: store.feedback) { _, message in
                 if let message { AccessibilityNotification.Announcement(message.localizedMessage).post() }
             }
@@ -70,10 +30,81 @@ struct GamePlayView: View {
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Pause") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).accessibilityIdentifier("session.pause")
+                    Button("Pause") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).foregroundStyle(GameMenuTheme.text).accessibilityIdentifier("session.pause")
                 }
             }
             .toolbar(.visible, for: .navigationBar)
         }
+    }
+
+    private func gameplay(_ session: GameSession) -> some View {
+        VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
+                if let result = session.outcome {
+                    Text(id.localizedOutcome(result))
+                        .font(.system(.title, design: .rounded).bold())
+                        .foregroundStyle(GameMenuTheme.ink)
+                        .accessibilityIdentifier("session.result")
+                }
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: textSize.isAccessibilitySize ? 260 : 135), spacing: 16)], alignment: .leading, spacing: 12) {
+                    if let score = session.state.score { MetricView(label: "Score", value: String(score)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.score") }
+                    MetricView(label: "Active Time", value: GameTheme.time(session.elapsed)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.time")
+                    if case let .klondike(game) = session.state { MetricView(label: "Moves", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 12).padding(.vertical, 6)
+            .foregroundStyle(GameMenuTheme.ink)
+            .background {
+                let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+                shape.fill(GameMenuTheme.face(id))
+                    .shadow(color: GameMenuTheme.depth, radius: 0, y: 6)
+                    .overlay(shape.strokeBorder(GameMenuTheme.ink, lineWidth: 2))
+            }
+            feedback
+            GameCatalog.board(id).id(session.id).disabled(session.outcome != nil)
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("session.board")
+        }
+        .padding(.horizontal, 12).padding(.vertical, 12)
+    }
+
+    private var feedback: some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(GameFeedback.allCases, id: \.self) { feedback in
+                Text(feedback.localizedMessage).hidden()
+            }
+            if let feedback = store.feedback {
+                Text(feedback.localizedMessage)
+                    .foregroundStyle(GameTheme.danger)
+                    .accessibilityIdentifier("session.feedback")
+            }
+        }
+        .font(.footnote)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func footer(_ session: GameSession) -> some View {
+        HStack(spacing: 10) {
+            Button { store.leaveGame() } label: {
+                Image(systemName: "house").frame(width: 48, height: 48)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(GameMenuTheme.text)
+            .accessibilityLabel("Game Box").accessibilityIdentifier("session.back")
+            if [.klondike, .sudoku, .game2048].contains(id) {
+                Button("Undo") { store.undo(id) }
+                    .buttonStyle(ActionButtonStyle()).disabled(!session.state.canUndo || session.outcome != nil)
+                    .accessibilityIdentifier("session.undo")
+            } else {
+                Button("Rules") { store.present(.rules) }.buttonStyle(ActionButtonStyle()).accessibilityIdentifier("session.rules")
+            }
+            Button("New Game") { store.requestNewGame(id) }
+                .buttonStyle(ActionButtonStyle(primary: true)).accessibilityIdentifier("session.new")
+        }
+        .padding(.horizontal, 12).padding(.vertical, 8).background(GameMenuTheme.canvas)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("session.footer")
     }
 }

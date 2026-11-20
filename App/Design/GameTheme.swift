@@ -1,5 +1,17 @@
 import SwiftUI
 import UIKit
+import OffPlayCore
+
+private struct GameplayGameKey: EnvironmentKey {
+    static let defaultValue: GameID? = nil
+}
+
+extension EnvironmentValues {
+    var gameplayGame: GameID? {
+        get { self[GameplayGameKey.self] }
+        set { self[GameplayGameKey.self] = newValue }
+    }
+}
 
 enum GameTheme {
     static let canvas = adaptive(0xf4f2ec, 0x1d211f)
@@ -30,18 +42,42 @@ enum GameTheme {
 struct ActionButtonStyle: ButtonStyle {
     var primary = false
     var destructive = false
+    var minimumHeight: CGFloat = 48
+    var horizontalPadding: CGFloat = 12
     @Environment(\.isEnabled) private var enabled
+    @Environment(\.gameplayGame) private var game
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(.headline, design: .rounded))
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .padding(.horizontal, 12)
-            .background(background(pressed: configuration.isPressed))
-            .foregroundStyle(primary ? GameTheme.canvas : GameTheme.ink)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(primary ? .clear : GameTheme.line, lineWidth: 1))
-            .opacity(enabled ? 1 : 0.4)
+        if let game {
+            let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
+            let pressed = configuration.isPressed
+            configuration.label
+                .font(.system(.headline, design: .rounded))
+                .frame(maxWidth: .infinity, minHeight: minimumHeight)
+                .padding(.horizontal, horizontalPadding)
+                .foregroundStyle(primary ? (destructive ? GameMenuTheme.paper : GameMenuTheme.ink) : GameMenuTheme.text)
+                .background {
+                    shape.fill(primary ? (destructive ? GameMenuTheme.redInk : GameMenuTheme.face(game)) : GameMenuTheme.utilitySurface)
+                        .shadow(color: GameMenuTheme.depth, radius: 0, y: pressed && !reduceMotion ? 2 : 6)
+                        .overlay(shape.strokeBorder(primary ? GameMenuTheme.ink : GameMenuTheme.utilityOutline, lineWidth: 2))
+                }
+                .offset(y: pressed && !reduceMotion ? 4 : 0)
+                .opacity(enabled ? (pressed && reduceMotion ? 0.8 : 1) : 0.5)
+                .animation(reduceMotion ? nil : .easeOut(duration: GameMenuTheme.pressDuration), value: pressed)
+                .contentShape(shape)
+        } else {
+            configuration.label
+                .font(.system(.headline, design: .rounded))
+                .frame(maxWidth: .infinity, minHeight: minimumHeight)
+                .padding(.horizontal, horizontalPadding)
+                .background(background(pressed: configuration.isPressed))
+                .foregroundStyle(primary ? GameTheme.canvas : GameTheme.ink)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(primary ? .clear : GameTheme.line, lineWidth: 1))
+                .opacity(enabled ? 1 : 0.4)
+        }
     }
 
     private func background(pressed: Bool) -> Color {
@@ -61,14 +97,27 @@ struct BoardButtonStyle: ButtonStyle {
 }
 
 struct MetricView: View {
+    @Environment(\.gameplayGame) private var game
     let label: LocalizedStringKey
     let value: String
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.caption).foregroundStyle(GameTheme.secondary)
+            Text(label).font(.caption).foregroundStyle(game == nil ? GameTheme.secondary : GameMenuTheme.ink)
             Text(value).font(.system(.headline, design: .rounded)).monospacedDigit()
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct GameplayBoardFrame: ViewModifier {
+    @Environment(\.gameplayGame) private var game
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: game == nil ? 16 : 20, style: game == nil ? .circular : .continuous)
+        content
+            .background(game.map { GameMenuTheme.boardWell($0) } ?? GameTheme.surface)
+            .clipShape(shape)
+            .overlay(shape.strokeBorder(game.map { GameMenuTheme.boardEdge($0) } ?? GameTheme.line, lineWidth: game == nil ? 1 : 2))
     }
 }
 
@@ -98,9 +147,7 @@ struct FittedBoard<Content: View>: View {
             .frame(height: cellSize * CGFloat(columns) + 16)
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
             .onChange(of: isOverflowing, initial: true) { onOverflowChange(isOverflowing) }
-            .background(GameTheme.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameTheme.line, lineWidth: 1))
+            .modifier(GameplayBoardFrame())
     }
 }
 
@@ -112,8 +159,6 @@ struct BoardViewport<Content: View>: View {
             content().padding(8)
         }
         .frame(maxWidth: .infinity).frame(height: height)
-        .background(GameTheme.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameTheme.line, lineWidth: 1))
+        .modifier(GameplayBoardFrame())
     }
 }

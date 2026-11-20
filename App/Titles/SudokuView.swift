@@ -6,6 +6,17 @@ struct SudokuView: View {
     @Environment(\.dynamicTypeSize) private var textSize
     @State private var selected: Int?
     @State private var noteMode = false
+    @State private var availableWidth: CGFloat = 0
+
+    private var digitRows: [[Int]] {
+        availableWidth >= 9 * 36 + 8 * 4 && !textSize.isAccessibilitySize
+            ? [Array(1...9)] : [Array(1...5), Array(6...9)]
+    }
+
+    private var keyWidth: CGFloat {
+        let columns = CGFloat(digitRows[0].count)
+        return max(0, (availableWidth - (columns - 1) * 4) / columns)
+    }
 
     var body: some View {
         if case let .sudoku(game)? = store.library.session(.sudoku)?.state {
@@ -34,10 +45,16 @@ struct SudokuView: View {
                 }
                 .font(.footnote)
                 .fixedSize(horizontal: false, vertical: true)
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 6)], spacing: 6) {
-                    ForEach(1...9, id: \.self) { digit in
-                        Button(String(digit)) { enter(digit) }.buttonStyle(ActionButtonStyle())
-                            .disabled(selected == nil).accessibilityIdentifier("sudoku.digit.\(digit)")
+                VStack(spacing: 6) {
+                    ForEach(digitRows, id: \.self) { row in
+                        HStack(spacing: 4) {
+                            ForEach(row, id: \.self) { digit in
+                                Button(String(digit)) { enter(digit) }
+                                    .buttonStyle(ActionButtonStyle(minimumHeight: 44, horizontalPadding: 0))
+                                    .frame(width: keyWidth)
+                                    .disabled(selected == nil).accessibilityIdentifier("sudoku.digit.\(digit)")
+                            }
+                        }
                     }
                 }
                 .accessibilityElement(children: .contain)
@@ -48,6 +65,7 @@ struct SudokuView: View {
                     Button("Erase") { enter(0) }.buttonStyle(ActionButtonStyle()).disabled(selected == nil).accessibilityIdentifier("sudoku.erase")
                 }
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { availableWidth = $0 }
         }
     }
     private func enter(_ digit: Int) {

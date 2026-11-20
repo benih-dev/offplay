@@ -15,6 +15,7 @@ final class OffPlayUITests: XCTestCase {
             let cell = try XCTUnwrap(game.values.firstIndex(of: 0))
             let digit = try XCTUnwrap(game.values[(cell / 9 * 9)..<(cell / 9 * 9 + 9)].first { $0 > 0 })
             app.buttons["sudoku.cell.\(cell)"].tap()
+            for _ in 0..<5 where !app.buttons["session.undo"].isHittable { app.swipeUp() }
             let keypad = app.descendants(matching: .any)["sudoku.keypad"].firstMatch
             XCTAssertTrue(keypad.exists)
             let frame = keypad.frame
@@ -668,6 +669,85 @@ final class OffPlayUITests: XCTestCase {
         }
         print("BOARD MEASUREMENT klondike 7 columns: \(cards[6].frame.width)pt cards on \(app.frame.width)pt screen; last column maxX \(cards[6].frame.maxX), last foundation maxX \(cards.last!.frame.maxX)")
         attach(app, name: "Fitted Klondike")
+    }
+
+    @MainActor func testGameplayControlsDoNotIntersectFooterInitially() {
+        let app = launch()
+        for game in ["blockGrid", "klondike", "sudoku", "game2048", "minesweeper", "wordScramble"] {
+            open(game, in: app)
+            let footer = app.otherElements["session.footer"].frame
+            let controls = app.otherElements["session.board"].descendants(matching: .button)
+            for control in controls.allElementsBoundByIndex {
+                XCTAssertFalse(control.frame.intersects(footer), "\(game): \(control.identifier) intersects footer")
+            }
+            for _ in 0..<5 where !app.buttons["session.back"].isHittable { app.swipeUp() }
+            app.buttons["session.back"].tap()
+        }
+    }
+
+    @MainActor func testSudokuControlsDoNotIntersectFooterInitially() {
+        let app = launch()
+        open("sudoku", in: app)
+        let footer = app.otherElements["session.footer"].frame
+        for id in ["sudoku.notes", "sudoku.erase"] {
+            let button = app.buttons[id]
+            XCTAssertTrue(button.exists)
+            XCTAssertFalse(button.frame.intersects(footer), "\(id) \(button.frame) intersects footer \(footer)")
+        }
+        let digits = (1...9).map { app.buttons["sudoku.digit.\($0)"].frame }
+        for frame in digits {
+            XCTAssertGreaterThanOrEqual(frame.width, 36)
+            XCTAssertGreaterThanOrEqual(frame.height, 44)
+            XCTAssertFalse(frame.intersects(footer))
+        }
+        if app.frame.width - 24 >= 9 * 36 + 8 * 4 {
+            XCTAssertEqual(digits[0].minY, digits[8].minY, accuracy: 1)
+        } else {
+            XCTAssertEqual(digits[0].minY, digits[4].minY, accuracy: 1)
+            XCTAssertEqual(digits[5].minY, digits[8].minY, accuracy: 1)
+            XCTAssertGreaterThan(digits[5].minY, digits[4].minY)
+        }
+    }
+
+    @MainActor func testSudokuSelectionAndNotesPersistThroughConflictsAndFeedback() throws {
+        let app = launch()
+        open("sudoku", in: app)
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.sudoku, content: try GameContent.bundled())
+        guard case let .sudoku(game)? = library.session(.sudoku)?.state,
+              let index = game.puzzle.givens.firstIndex(of: 0),
+              let conflict = (0..<9).map({ game.puzzle.givens[index / 9 * 9 + $0] }).first(where: { $0 > 0 }) else {
+            return XCTFail("Expected an empty cell and a given in its row")
+        }
+        let cell = app.buttons["sudoku.cell.\(index)"]
+        let notes = app.buttons["sudoku.notes"]
+        cell.tap()
+        for _ in 0..<5 where !notes.isHittable { app.swipeUp() }
+        notes.tap()
+        app.buttons["sudoku.digit.2"].tap()
+        app.buttons["sudoku.digit.3"].tap()
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertEqual(cell.value as? String, "empty")
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+        notes.tap()
+        app.buttons["sudoku.digit.\(conflict)"].tap()
+        XCTAssertEqual(cell.value as? String, String(conflict))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Cells with duplicate numbers:'")).firstMatch.exists)
+        XCTAssertEqual(notes.label, "Notes")
+        XCTAssertTrue(app.buttons["sudoku.digit.1"].isEnabled)
+        for _ in 0..<5 where !notes.isHittable { app.swipeUp() }
+        notes.tap()
+        app.buttons["sudoku.digit.5"].tap()
+        XCTAssertTrue(app.staticTexts["session.feedback"].exists)
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertEqual(cell.value as? String, String(conflict))
+        XCTAssertTrue(app.buttons["sudoku.digit.1"].isEnabled)
+        attach(app, name: "Sudoku Notes and Selection Persist With Feedback")
+        app.buttons["sudoku.erase"].tap()
+        app.buttons["sudoku.digit.6"].tap()
+        XCTAssertEqual(cell.value as? String, "empty")
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
     }
 
     @MainActor func testSudokuFullDigitPadIsReachable() {
