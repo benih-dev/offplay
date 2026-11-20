@@ -12,7 +12,7 @@ struct BlockGridView: View {
             VStack(spacing: 12) {
                 if session.outcome == nil {
                     Text("Choose a piece, then tap where its top-left corner should go.")
-                        .font(.footnote).foregroundStyle(GameTheme.secondary)
+                        .font(.footnote).foregroundStyle(GameMenuTheme.secondary)
                         .accessibilityIdentifier("block.instructions")
                 }
                 FittedBoard(columns: 8, preferredCellSize: size) { size in
@@ -26,9 +26,7 @@ struct BlockGridView: View {
                                     state = .blockGrid(current); return changed
                                 }) { selected = nil }
                             } label: {
-                                Rectangle().fill(game.board[index] == 0 ? GameTheme.canvas : GameTheme.accent)
-                                    .frame(width: size, height: size)
-                                    .overlay(Rectangle().stroke(game.board[index] == 0 ? GameTheme.line : GameTheme.canvas, lineWidth: 1))
+                                BoardCell(filled: game.board[index] != 0).frame(width: size, height: size)
                             }
                             .buttonStyle(BoardButtonStyle()).disabled(selected == nil)
                             .accessibilityLabel("Row \(index / 8 + 1), column \(index % 8 + 1), \(game.board[index] == 0 ? String(localized: "empty") : String(localized: "filled"))")
@@ -39,13 +37,7 @@ struct BlockGridView: View {
                 HStack(spacing: 8) {
                     ForEach(0..<3, id: \.self) { slot in
                         Button { selected = selected == slot ? nil : slot } label: {
-                            VStack(spacing: 8) {
-                                if let piece = game.tray[slot] { PieceView(cells: BlockGridGame.pieces[piece]) }
-                                else { Text("Used").font(.caption) }
-                            }.frame(maxWidth: .infinity, minHeight: 80)
-                                .background(selected == slot ? GameTheme.accentFill : GameTheme.surface)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(selected == slot ? GameTheme.accent : GameTheme.line, lineWidth: selected == slot ? 2 : 1))
+                            TraySlot(piece: game.tray[slot], selected: selected == slot)
                         }
                         .buttonStyle(.plain).disabled(game.tray[slot] == nil)
                         .accessibilityLabel("Piece \(slot + 1)")
@@ -55,7 +47,7 @@ struct BlockGridView: View {
                 }
                 if session.outcome == nil {
                     Text("Pieces cannot be rotated.")
-                        .font(.caption).foregroundStyle(GameTheme.secondary)
+                        .font(.caption).foregroundStyle(GameMenuTheme.secondary)
                         .accessibilityIdentifier("block.rotationHint")
                 }
             }
@@ -63,14 +55,57 @@ struct BlockGridView: View {
     }
 }
 
+private struct BoardCell: View {
+    let filled: Bool
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 4, style: .continuous)
+        shape.fill(filled ? GameMenuTheme.blockTile : GameMenuTheme.utilitySurface)
+            .overlay(shape.strokeBorder(filled ? GameMenuTheme.blockTileEdge : GameMenuTheme.blockCellEdge, lineWidth: 1))
+            .padding(1)
+    }
+}
+
+private struct TraySlot: View {
+    let piece: Int?
+    let selected: Bool
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: GameMenuTheme.smallRadius, style: .continuous)
+        Group {
+            if let piece { PieceView(cells: BlockGridGame.pieces[piece], ink: selected ? GameMenuTheme.greenDeep : GameMenuTheme.blockTile) }
+            else { Text("Used").font(.system(.caption, design: .rounded)).foregroundStyle(GameMenuTheme.secondary) }
+        }
+        .frame(maxWidth: .infinity, minHeight: 80)
+        .background {
+            if piece == nil {
+                shape.strokeBorder(GameMenuTheme.utilityOutline, style: StrokeStyle(lineWidth: GameMenuTheme.edge, dash: [6, 4]))
+            } else {
+                shape.fill(selected ? GameMenuTheme.face(.blockGrid) : GameMenuTheme.utilitySurface)
+                    .shadow(color: GameMenuTheme.depth, radius: 0, y: selected ? 2 : GameMenuTheme.lift)
+                    .overlay(shape.strokeBorder(selected ? GameMenuTheme.ink : GameMenuTheme.utilityOutline, lineWidth: GameMenuTheme.edge))
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            if selected {
+                Image(systemName: "checkmark.circle.fill").font(.body.bold())
+                    .foregroundStyle(GameMenuTheme.ink).padding(6)
+            }
+        }
+        .offset(y: selected ? 4 : 0)
+        .contentShape(shape)
+    }
+}
+
 private struct PieceView: View {
     let cells: [GridCell]
+    let ink: Color
     var body: some View {
         Grid(horizontalSpacing: 2, verticalSpacing: 2) {
             ForEach(0...cells.map(\.row).max()!, id: \.self) { row in
                 GridRow {
                     ForEach(0...cells.map(\.column).max()!, id: \.self) { column in
-                        Rectangle().fill(cells.contains(GridCell(row, column)) ? GameTheme.accent : .clear).frame(width: 11, height: 11)
+                        RoundedRectangle(cornerRadius: 2, style: .continuous).fill(cells.contains(GridCell(row, column)) ? ink : .clear).frame(width: 11, height: 11)
                     }
                 }
             }

@@ -180,6 +180,16 @@ Footer tetap di bawah saat seluruh konten muat. Jika tinggi konten melebihi ruan
 
 Interior papan tiap game mengikuti aturan sel tenang.
 
+### Block Grid
+
+| Elemen | Token terang / gelap | Penggunaan |
+| --- | --- | --- |
+| Sel kosong | `utilitySurface` `#FFFFFF` / `#284653`, garis `blockCellEdge` `#9CC8AD` / `#3D6374` | Radius 4 pt, garis 1 pt, celah 2 pt memperlihatkan `boardWell` |
+| Blok terisi | `blockTile` `#168458` / `#76BE91`, garis `blockTileEdge` `#0D5B3D` / `#173C43` | Kontras minimal 4,5:1 terhadap sel kosong |
+| Kepingan tersedia | `utilitySurface`, garis `utilityOutline` 2 pt, bayangan `depth` 6 pt; blok `blockTile` | Radius 12 pt seperti tombol sekunder |
+| Kepingan terpilih | `face(id)`, garis `ink` 2 pt, bayangan 2 pt dan turun 4 pt; blok `greenDeep` | Ikon centang `ink` di pojok kanan atas agar seleksi tidak bergantung pada warna |
+| Kepingan terpakai | Garis putus-putus `utilityOutline` 2 pt tanpa isian, label `secondary` | Tidak dapat dipilih |
+
 ## Pemeliharaan
 
 Sumber implementasi native dalam repositori ini:
