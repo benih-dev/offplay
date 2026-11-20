@@ -179,6 +179,7 @@ Jaga kontras angka Sudoku dan Minesweeper minimal 4,5:1 pada sel netral. Kesalah
 Footer tetap di bawah saat seluruh konten muat. Jika tinggi konten melebihi ruang aman, gulir konten dan footer bersama dalam urutan dokumen agar kontrol tidak tertutup footer. Jangan menambal tata letak dengan offset tetap. Numpad Sudoku memakai satu baris 1–9 bila sembilan tombol selebar minimal 36 pt muat; selain itu gunakan dua baris 1–5 dan 6–9 yang terpusat, dengan tinggi tombol 44 pt.
 
 Interior papan tiap game mengikuti aturan sel tenang.
+2048 menjadi pengecualian aturan sel netral: ramp keluarga kuning dimulai dari `paper` (2), lalu kuning muda, emas, dan amber (4–64) dengan angka `ink`; 128–1024 memakai oker yang semakin gelap dengan angka `paper`. Nilai ≥2048 memakai isian `ink`, angka kuning, dan garis kuning paling tebal. Token `Tiles2048` meredupkan permukaan terang pada mode gelap; seluruh angka berkontras minimal 4,5:1. Sel kosong memakai garis putus-putus dan isian transparan yang lebih gelap dari bingkai pada mode gelap. Instruksi memakai `secondary` dan pesan mencapai 2048 memakai `text` agar kontras pada kanvas.
 
 Sudoku memakai `GameTheme.canvas` untuk given dan `GameTheme.surface` untuk sel isian, termasuk sel terpilih. Tinta given memakai `GameTheme.ink`; angka isian, catatan, garis kotak 3×3 dan outline seleksi memakai `blueInk` (terang) / `blue` (gelap). Seleksi memakai outline inset 2 pt sehingga tetap terlihat bersama garis duplikat merah 2 pt; angka duplikat juga memakai bobot semibold (given tetap bold).
 

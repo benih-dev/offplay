@@ -27,6 +27,19 @@ enum GameMenuTheme {
     static let blueFill = adaptive(0xb9e5fb, 0x9ecde4)
     static let blueInk = color(0x164f76)
 
+    enum Tiles2048 {
+        static let two = adaptive(0xffffff, 0xf2e8cc)
+        static let four = adaptive(0xffe9a3, 0xe7d49a)
+        static let eight = adaptive(0xffda65, 0xdcc16d)
+        static let sixteen = adaptive(0xffc13b, 0xd5ac47)
+        static let thirtyTwo = adaptive(0xefa520, 0xd49a29)
+        static let sixtyFour = adaptive(0xe39518, 0xe29324)
+        static let oneTwentyEight = color(0x926700)
+        static let twoFiftySix = color(0x795000)
+        static let fiveTwelve = color(0x603b00)
+        static let oneThousandTwentyFour = color(0x472a00)
+    }
+
     static let unit: CGFloat = 4
     static let inset: CGFloat = 16
     static let sectionGap: CGFloat = 24
