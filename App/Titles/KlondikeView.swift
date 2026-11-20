@@ -48,9 +48,11 @@ struct KlondikeView: View {
                 }
                   .frame(minWidth: max(0, availableWidth - 16))
                   .padding(.horizontal, 8)
+                  .padding(.top, 4)
                 }
                 .scrollDisabled(!isOverflowing)
                 .frame(height: cardHeight + countHeight + 8)
+                .accessibilityIdentifier("cards.piles")
                 BoardViewport(height: max(220, (game.tableau.map { column in column.reduce(CGFloat(0)) { $0 + ($1.faceUp ? cardHeight : hiddenHeight) + 3 } }.max() ?? cardHeight) + 16)) {
                     HStack(alignment: .top, spacing: 4) {
                         ForEach(0..<7, id: \.self) { column in

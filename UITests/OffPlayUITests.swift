@@ -16,6 +16,10 @@ final class OffPlayUITests: XCTestCase {
         let waste = app.buttons["cards.waste"]
         waste.tap()
         XCTAssertTrue(waste.isSelected)
+        let piles = app.scrollViews["cards.piles"]
+        XCTAssertTrue(piles.exists)
+        XCTAssertGreaterThanOrEqual(waste.frame.minY, piles.frame.minY)
+        XCTAssertLessThanOrEqual(waste.frame.maxY, piles.frame.maxY)
         waste.tap()
         XCTAssertFalse(waste.isSelected)
     }
