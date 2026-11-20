@@ -32,7 +32,14 @@ final class OffPlayUITests: XCTestCase {
             let move = try XCTUnwrap((0..<3).flatMap { slot in
                 (0..<64).map { (slot: slot, cell: $0) }
             }.first { game.canPlace(slot: $0.slot, row: $0.cell / 8, column: $0.cell % 8) })
-            app.buttons["block.piece.\(move.slot)"].tap()
+            let piece = app.buttons["block.piece.\(move.slot)"]
+            let footer = app.buttons["session.rules"]
+            for _ in 0..<4 where piece.frame.maxY > footer.frame.minY - 8 {
+                app.swipeUp()
+            }
+            XCTAssertLessThanOrEqual(piece.frame.maxY, footer.frame.minY - 8)
+            piece.tap()
+            XCTAssertEqual(piece.value as? String, "selected")
             app.buttons["block.cell.\(move.cell)"].tap()
             XCTAssertTrue(game.place(slot: move.slot, row: move.cell / 8, column: move.cell % 8))
             moves += 1
