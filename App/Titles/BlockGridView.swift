@@ -7,10 +7,14 @@ struct BlockGridView: View {
     @State private var selected: Int?
 
     var body: some View {
-        if case let .blockGrid(game)? = store.library.session(.blockGrid)?.state {
+        if let session = store.library.session(.blockGrid), case let .blockGrid(game) = session.state {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
             VStack(spacing: 12) {
-                Text("Choose a piece, then tap where its top-left corner should go.").font(.footnote).foregroundStyle(GameTheme.secondary)
+                if session.outcome == nil {
+                    Text("Choose a piece, then tap where its top-left corner should go.")
+                        .font(.footnote).foregroundStyle(GameTheme.secondary)
+                        .accessibilityIdentifier("block.instructions")
+                }
                 FittedBoard(columns: 8, preferredCellSize: size) { size in
                     LazyVGrid(columns: Array(repeating: GridItem(.fixed(size), spacing: 0), count: 8), spacing: 0) {
                         ForEach(0..<64, id: \.self) { index in
@@ -49,7 +53,11 @@ struct BlockGridView: View {
                         .accessibilityIdentifier("block.piece.\(slot)")
                     }
                 }
-                Text("Pieces cannot be rotated.").font(.caption).foregroundStyle(GameTheme.secondary)
+                if session.outcome == nil {
+                    Text("Pieces cannot be rotated.")
+                        .font(.caption).foregroundStyle(GameTheme.secondary)
+                        .accessibilityIdentifier("block.rotationHint")
+                }
             }
         }
     }

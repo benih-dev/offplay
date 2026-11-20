@@ -6,7 +6,7 @@ struct Game2048View: View {
     @FocusState private var keyboardFocus: Bool
 
     var body: some View {
-        if case let .game2048(game)? = store.library.session(.game2048)?.state {
+        if let session = store.library.session(.game2048), case let .game2048(game) = session.state {
             VStack(spacing: 12) {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
                         ForEach(0..<16, id: \.self) { index in
@@ -41,7 +41,11 @@ struct Game2048View: View {
                             .accessibilityIdentifier("slide.\(direction.rawValue)")
                     }
                 }
-                Text("Swipe the board, tap the direction buttons, or use the arrow keys.").font(.caption).foregroundStyle(GameTheme.secondary)
+                if session.outcome == nil {
+                    Text("Swipe the board, tap the direction buttons, or use the arrow keys.")
+                        .font(.caption).foregroundStyle(GameTheme.secondary)
+                        .accessibilityIdentifier("slide.instructions")
+                }
             }.onAppear { keyboardFocus = true }
         }
     }

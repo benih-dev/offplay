@@ -60,7 +60,6 @@ final class OffPlayUITests: XCTestCase {
         guard case var .blockGrid(game)? = library.session(.blockGrid)?.state else {
             return XCTFail("Expected Block Grid session")
         }
-        open("blockGrid", in: app)
         XCTAssertFalse(app.staticTexts["session.result"].exists)
         var moves = 0
         while !game.isGameOver && moves < 100 {
@@ -86,10 +85,56 @@ final class OffPlayUITests: XCTestCase {
     @MainActor func testBlockGridEndedStatus() throws {
         let app = launch()
         XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Ready to play")
+        open("blockGrid", in: app)
         try endBlockGrid(in: app)
         XCTAssertEqual(app.staticTexts["session.result"].label, "Session ended")
         app.buttons["session.back"].tap()
         XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Session ended")
+    }
+
+    @MainActor func testBlockGridHidesInstructionsWhenSessionEnds() throws {
+        let app = launch()
+        open("blockGrid", in: app)
+        let instructions = app.staticTexts["block.instructions"]
+        let rotationHint = app.staticTexts["block.rotationHint"]
+        XCTAssertTrue(instructions.exists)
+        XCTAssertTrue(rotationHint.exists)
+
+        try endBlockGrid(in: app)
+        XCTAssertFalse(instructions.exists)
+        XCTAssertFalse(rotationHint.exists)
+
+        app.buttons["session.new"].tap()
+        XCTAssertTrue(instructions.waitForExistence(timeout: 5))
+        XCTAssertTrue(rotationHint.exists)
+    }
+
+    @MainActor func test2048HidesInstructionsWhenSessionEnds() throws {
+        let app = launch()
+        open("game2048", in: app)
+        let instructions = app.staticTexts["slide.instructions"]
+        let result = app.staticTexts["session.result"]
+        XCTAssertTrue(instructions.exists)
+        XCTAssertFalse(result.exists)
+
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.game2048, content: try GameContent.bundled())
+        guard case var .game2048(game)? = library.session(.game2048)?.state else {
+            return XCTFail("Expected 2048 session")
+        }
+        for _ in 0..<100 {
+            if game.isGameOver { break }
+            let direction = try XCTUnwrap(SlideDirection.allCases.first { game.slide($0) })
+            let button = app.buttons["slide.\(direction.rawValue)"]
+            if !button.isHittable { app.swipeUp() }
+            button.tap()
+        }
+        XCTAssertTrue(game.isGameOver)
+        XCTAssertTrue(result.waitForExistence(timeout: 5))
+        XCTAssertFalse(instructions.exists)
+
+        app.buttons["session.new"].tap()
+        XCTAssertTrue(instructions.waitForExistence(timeout: 5))
     }
 
     @MainActor func testIndonesianStatisticsLabels() throws {
