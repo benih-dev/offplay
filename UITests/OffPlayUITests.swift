@@ -3,6 +3,23 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testKlondikeCardSelectionTrait() {
+        let app = launch()
+        open("klondike", in: app)
+        let card = app.buttons["cards.tableau.0.0"]
+        XCTAssertFalse(card.isSelected)
+        card.tap()
+        XCTAssertTrue(card.isSelected)
+        card.tap()
+        XCTAssertFalse(card.isSelected)
+        app.buttons["cards.stock"].tap()
+        let waste = app.buttons["cards.waste"]
+        waste.tap()
+        XCTAssertTrue(waste.isSelected)
+        waste.tap()
+        XCTAssertFalse(waste.isSelected)
+    }
+
     @MainActor func testSudokuDuplicatesDoNotMoveKeypad() throws {
         for language in ["en", "id"] {
             let app = launch(language: language)
