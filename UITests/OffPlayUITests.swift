@@ -19,6 +19,42 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertEqual(board.frame.integral, frame)
     }
 
+    @MainActor private func putAceOnFoundation(in app: XCUIApplication) throws -> CardSuit {
+        open("klondike", in: app)
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.klondike, content: try GameContent.bundled())
+        guard case var .klondike(game)? = library.session(.klondike)?.state else {
+            throw NSError(domain: "Expected Klondike session", code: 1)
+        }
+        while !game.stock.isEmpty {
+            game.draw()
+            app.buttons["cards.stock"].tap()
+            if let card = game.waste.last, card.rank == 1 {
+                app.buttons["cards.waste"].tap()
+                app.buttons["cards.foundation.\(card.suit.rawValue)"].tap()
+                return card.suit
+            }
+        }
+        throw NSError(domain: "Expected an ace in the seeded stock", code: 1)
+    }
+
+    @MainActor func testKlondikeSelectedPileRetapDeselects() throws {
+        let app = launch()
+        let suit = try putAceOnFoundation(in: app)
+        let foundation = app.buttons["cards.foundation.\(suit.rawValue)"]
+        let emptyFoundation = app.buttons["cards.foundation.\((suit.rawValue + 1) % 4)"]
+        XCTAssertFalse(emptyFoundation.isEnabled)
+        for pile in [app.buttons["cards.tableau.0.0"], app.buttons["cards.waste"], foundation] {
+            if pile.identifier == "cards.waste" { app.buttons["cards.stock"].tap() }
+            pile.tap()
+            XCTAssertTrue(emptyFoundation.isEnabled)
+            pile.tap()
+            XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+            XCTAssertFalse(emptyFoundation.isEnabled, "Re-tapping a selected pile should clear selection")
+        }
+    }
+    }
+
     @MainActor private func endBlockGrid(in app: XCUIApplication) throws {
         var library = GameLibrary(seed: 42)
         library.ensureSession(.blockGrid, content: try GameContent.bundled())
