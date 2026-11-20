@@ -31,9 +31,20 @@ struct SudokuView: View {
                         }
                     }.frame(width: size * 9)
                 }
-                if !duplicates.isEmpty {
-                    Text("Cells with duplicate numbers: \(duplicates.count).").font(.footnote).foregroundStyle(GameTheme.danger)
+                ZStack {
+                    ForEach(0...game.values.count, id: \.self) { count in
+                        Text("Cells with duplicate numbers: \(count).")
+                            .hidden()
+                            .accessibilityHidden(true)
+                    }
+                    if !duplicates.isEmpty {
+                        Text("Cells with duplicate numbers: \(duplicates.count).")
+                            .foregroundStyle(GameTheme.danger)
+                            .accessibilityIdentifier("sudoku.duplicates")
+                    }
                 }
+                .font(.footnote)
+                .fixedSize(horizontal: false, vertical: true)
                 VStack(spacing: 6) {
                     ForEach(digitRows, id: \.self) { row in
                         HStack(spacing: 4) {
@@ -46,6 +57,8 @@ struct SudokuView: View {
                         }
                     }
                 }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("sudoku.keypad")
                 HStack(spacing: 8) {
                     Button(noteMode ? LocalizedStringKey("Notes: On") : "Notes") { noteMode.toggle() }
                         .buttonStyle(ActionButtonStyle(primary: noteMode)).accessibilityIdentifier("sudoku.notes")
