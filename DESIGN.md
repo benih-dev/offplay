@@ -168,7 +168,7 @@ Semua token warna berikut berasal dari `GameMenuTheme`, kecuali permukaan sel ne
 | --- | --- | --- |
 | Kanvas dan footer | `canvas` / `canvas` | Latar biru langit / biru tua `#172D36` |
 | Kartu header | `face(id)`, `ink`, `depth` / token yang sama | Hasil, metrik termasuk label, dan umpan balik; radius 20 pt, garis 2 pt, bayangan keras 6 pt pada bentuk dasar |
-| Bingkai papan | `well(id)`, `ink` / token yang sama | Isian area luar sel, radius 20 pt dan garis 2 pt; ukuran sel serta ruang papan tetap |
+| Bingkai papan | `boardWell(id)` terang / gelap: hijau `#C8F2D3` / `#274A3A`, koral `#FFDDD4` / `#4D3236`, biru `#B9E5FB` / `#22445A`, kuning `#FFF0B4` / `#4A4428`; `boardEdge(id)` terang `#173C43` / gelap: hijau `#76BE91`, koral `#E88D84`, biru `#74B4D7`, kuning `#E5C360` | Isian area luar sel, radius 20 pt dan garis 2 pt; ukuran sel serta ruang papan tetap |
 | Tombol utama | `face(id)`, `ink`, `depth` / token yang sama | Label gelap, garis 2 pt, radius 12 pt; aksi destruktif memakai `redInk` dengan label `paper` |
 | Tombol sekunder | `utilitySurface`, `text`, `utilityOutline`, `depth` / token yang sama | Permukaan putih / biru tua, label dan garis adaptif |
 | Sel papan | `paper` atau permukaan netral, teks keluarga `ink` / permukaan netral gelap dengan teks kontras | Isi tenang, tanpa warna keluarga game di belakang angka |

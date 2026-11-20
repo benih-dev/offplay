@@ -58,6 +58,24 @@ enum GameMenuTheme {
         }
     }
 
+    static func boardWell(_ id: GameID) -> Color {
+        switch id {
+        case .blockGrid, .minesweeper: adaptive(0xc8f2d3, 0x274a3a)
+        case .klondike, .wordScramble: adaptive(0xffddd4, 0x4d3236)
+        case .sudoku: adaptive(0xb9e5fb, 0x22445a)
+        case .game2048: adaptive(0xfff0b4, 0x4a4428)
+        }
+    }
+
+    static func boardEdge(_ id: GameID) -> Color {
+        switch id {
+        case .blockGrid, .minesweeper: adaptive(0x173c43, 0x76be91)
+        case .klondike, .wordScramble: adaptive(0x173c43, 0xe88d84)
+        case .sudoku: adaptive(0x173c43, 0x74b4d7)
+        case .game2048: adaptive(0x173c43, 0xe5c360)
+        }
+    }
+
     nonisolated private static func color(_ hex: UInt32) -> Color {
         Color(uiColor: uiColor(hex))
     }

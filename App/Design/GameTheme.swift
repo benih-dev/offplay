@@ -113,9 +113,9 @@ private struct GameplayBoardFrame: ViewModifier {
     func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: game == nil ? 16 : 20, style: game == nil ? .circular : .continuous)
         content
-            .background(game.map { GameMenuTheme.well($0) } ?? GameTheme.surface)
+            .background(game.map { GameMenuTheme.boardWell($0) } ?? GameTheme.surface)
             .clipShape(shape)
-            .overlay(shape.strokeBorder(game == nil ? GameTheme.line : GameMenuTheme.ink, lineWidth: game == nil ? 1 : 2))
+            .overlay(shape.strokeBorder(game.map { GameMenuTheme.boardEdge($0) } ?? GameTheme.line, lineWidth: game == nil ? 1 : 2))
     }
 }
 

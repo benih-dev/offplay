@@ -9,7 +9,7 @@ struct GamePlayView: View {
     var body: some View {
         if let session = store.library.session(id) {
             ScrollView(.vertical) {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 10) {
                         if let result = session.outcome {
                             Text(id.localizedOutcome(result))
@@ -36,7 +36,7 @@ struct GamePlayView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(12)
+                    .padding(.horizontal, 12).padding(.vertical, 8)
                     .foregroundStyle(GameMenuTheme.ink)
                     .background {
                         let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
