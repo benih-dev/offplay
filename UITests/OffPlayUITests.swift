@@ -3,6 +3,33 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testSudokuDuplicatesDoNotMoveKeypad() throws {
+        for language in ["en", "id"] {
+            let app = launch(language: language)
+            open("sudoku", in: app)
+            var library = GameLibrary(seed: 42)
+            library.ensureSession(.sudoku, content: try GameContent.bundled())
+            guard case let .sudoku(game)? = library.session(.sudoku)?.state else {
+                return XCTFail("Expected Sudoku session")
+            }
+            let cell = try XCTUnwrap(game.values.firstIndex(of: 0))
+            let digit = try XCTUnwrap(game.values[(cell / 9 * 9)..<(cell / 9 * 9 + 9)].first { $0 > 0 })
+            app.buttons["sudoku.cell.\(cell)"].tap()
+            let keypad = app.descendants(matching: .any)["sudoku.keypad"].firstMatch
+            XCTAssertTrue(keypad.exists)
+            let frame = keypad.frame
+            XCTAssertFalse(app.staticTexts["sudoku.duplicates"].exists)
+            app.buttons["sudoku.digit.\(digit)"].tap()
+            XCTAssertTrue(app.staticTexts["sudoku.duplicates"].waitForExistence(timeout: 5))
+            print("KEYPAD \(language) no-dup=\(frame) dup=\(keypad.frame)")
+            XCTAssertEqual(keypad.frame, frame)
+            app.buttons["session.undo"].tap()
+            XCTAssertFalse(app.staticTexts["sudoku.duplicates"].exists)
+            XCTAssertEqual(keypad.frame, frame)
+            app.terminate()
+        }
+    }
+
     @MainActor func testFeedbackDoesNotMoveBoard() {
         let app = launch()
         open("blockGrid", in: app)
