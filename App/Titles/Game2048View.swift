@@ -17,14 +17,15 @@ struct Game2048View: View {
                             let tile = game.board[index]
                             Text(tile == 0 ? "" : String(tile))
                                 .font(.system(.title2, design: .rounded).bold()).minimumScaleFactor(0.4).lineLimit(1)
+                                .padding(.horizontal, 6)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .aspectRatio(1, contentMode: .fit)
                                 .background(tileFill(tile))
-                                .foregroundStyle(tile >= 128 ? GameMenuTheme.paper : GameMenuTheme.ink)
+                                .foregroundStyle(tile >= 2048 ? GameMenuTheme.yellow : (tile >= 128 ? GameMenuTheme.paper : GameMenuTheme.ink))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 12)
-                                        .strokeBorder(tile == 0 ? GameMenuTheme.boardEdge(.game2048).opacity(0.35) : (tile >= 128 ? GameMenuTheme.paper.opacity(tile >= 2048 ? 1 : 0.45) : GameMenuTheme.ink.opacity(0.2)), style: StrokeStyle(lineWidth: tile >= 2048 ? 3 : (tile >= 128 ? 2 : 1), dash: tile == 0 ? [3, 3] : []))
+                                        .strokeBorder(tile == 0 ? GameMenuTheme.boardEdge(.game2048).opacity(0.35) : (tile >= 2048 ? GameMenuTheme.yellow : (tile >= 128 ? GameMenuTheme.paper.opacity(0.45) : GameMenuTheme.ink.opacity(0.2))), style: StrokeStyle(lineWidth: tile >= 2048 ? 3 : (tile >= 128 ? 2 : 1), dash: tile == 0 ? [3, 3] : []))
                                 }
                                 .accessibilityLabel("Row \(index / 4 + 1), column \(index % 4 + 1), \(tile == 0 ? String(localized: "empty") : String(tile))")
                         }
@@ -33,7 +34,7 @@ struct Game2048View: View {
                     .modifier(GameplayBoardFrame())
                     .frame(maxWidth: 480)
                     .containerRelativeFrame(.horizontal) { width, _ in
-                        min(width - 24, width < 390 ? 300 : 480)
+                        min(width - 24, width < 390 ? (game.reached2048 ? 280 : 300) : 480)
                     }
                     .accessibilityElement(children: .contain).accessibilityIdentifier("slide.board")
                     .highPriorityGesture(DragGesture(minimumDistance: 0).onEnded { gesture in
@@ -64,23 +65,20 @@ struct Game2048View: View {
     }
 
     private func tileFill(_ value: Int) -> Color {
-        guard value != 0 else { return Self.emptyCell }
-        guard value < 128 else { return GameMenuTheme.ink }
-        let tint: CGFloat = switch value {
-        case 2: 0
-        case 4: 0.10
-        case 8: 0.20
-        case 16: 0.30
-        case 32: 0.40
-        default: 0.46
+        switch value {
+        case 0: Self.emptyCell
+        case 2: GameMenuTheme.Tiles2048.two
+        case 4: GameMenuTheme.Tiles2048.four
+        case 8: GameMenuTheme.Tiles2048.eight
+        case 16: GameMenuTheme.Tiles2048.sixteen
+        case 32: GameMenuTheme.Tiles2048.thirtyTwo
+        case 64: GameMenuTheme.Tiles2048.sixtyFour
+        case 128: GameMenuTheme.Tiles2048.oneTwentyEight
+        case 256: GameMenuTheme.Tiles2048.twoFiftySix
+        case 512: GameMenuTheme.Tiles2048.fiveTwelve
+        case 1024: GameMenuTheme.Tiles2048.oneThousandTwentyFour
+        default: GameMenuTheme.ink
         }
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        UIColor(GameMenuTheme.ink).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        let ink = (red, green, blue)
-        return Color(uiColor: UIColor { traits in
-            let amount = traits.userInterfaceStyle == .dark ? 0.12 + 0.74 * tint : tint
-            return UIColor(red: 1 + (ink.0 - 1) * amount, green: 1 + (ink.1 - 1) * amount, blue: 1 + (ink.2 - 1) * amount, alpha: 1)
-        })
     }
 
     private func move(_ direction: SlideDirection) {
