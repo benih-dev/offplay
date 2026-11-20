@@ -180,6 +180,8 @@ Footer tetap di bawah saat seluruh konten muat. Jika tinggi konten melebihi ruan
 
 Interior papan tiap game mengikuti aturan sel tenang.
 
+Sudoku memakai `GameTheme.canvas` untuk given dan `GameTheme.surface` untuk sel isian, termasuk sel terpilih. Tinta given memakai `GameTheme.ink`; angka isian, catatan, garis kotak 3×3 dan outline seleksi memakai `blueInk` (terang) / `blue` (gelap). Seleksi memakai outline inset 2 pt sehingga tetap terlihat bersama garis duplikat merah 2 pt; angka duplikat juga memakai bobot semibold (given tetap bold).
+
 ## Pemeliharaan
 
 Sumber implementasi native dalam repositori ini:
