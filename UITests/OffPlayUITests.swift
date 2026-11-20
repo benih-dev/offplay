@@ -3,6 +3,73 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func test2048ThemeEvidence() {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("game2048", in: app)
+                let footer = app.otherElements["session.footer"].frame
+                let arrows = ["left", "up", "down", "right"].map { app.buttons["slide.\($0)"] }
+                for arrow in arrows {
+                    XCTAssertTrue(arrow.isHittable)
+                    XCTAssertGreaterThanOrEqual(arrow.frame.height, 48)
+                    XCTAssertLessThanOrEqual(arrow.frame.maxY + 6, footer.minY)
+                }
+                XCTAssertLessThanOrEqual(footer.maxY, app.frame.maxY)
+                XCTAssertEqual(arrows[0].frame.minY, arrows[3].frame.minY, accuracy: 1)
+                XCTAssertEqual(arrows[0].frame.width, arrows[3].frame.width, accuracy: 1)
+                for direction in ["left", "up", "right", "down", "left", "up", "left", "down"] {
+                    app.buttons["slide.\(direction)"].tap()
+                }
+                let board = app.descendants(matching: .any)["slide.board"]
+                let values = Set(board.staticTexts.allElementsBoundByIndex.compactMap { Int($0.label.components(separatedBy: ", ").last ?? "") }.filter { $0 > 0 })
+                XCTAssertGreaterThanOrEqual(values.count, 3)
+                Thread.sleep(forTimeInterval: 2)
+                attach(app, name: "2048-\(language)-\(theme)")
+                app.terminate()
+            }
+        }
+    }
+
+    @MainActor func testSudokuThemeEvidence() throws {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("sudoku", in: app)
+                var library = GameLibrary(seed: 42)
+                library.ensureSession(.sudoku, content: try GameContent.bundled())
+                guard case let .sudoku(game)? = library.session(.sudoku)?.state else {
+                    return XCTFail("Expected Sudoku")
+                }
+                let cells = game.values.indices.filter { game.values[$0] == 0 }
+                let cell = cells[0]
+                let digit = try XCTUnwrap(game.values[(cell / 9 * 9)..<(cell / 9 * 9 + 9)].first { $0 > 0 })
+                app.buttons["sudoku.cell.\(cell)"].tap()
+                app.buttons["sudoku.digit.\(digit)"].tap()
+                app.buttons["sudoku.cell.\(cells[1])"].tap()
+                app.buttons["sudoku.notes"].tap()
+                app.buttons["sudoku.digit.2"].tap()
+                app.buttons["sudoku.notes"].tap()
+                app.buttons["sudoku.cell.\(cell)"].tap()
+                XCTAssertTrue(app.staticTexts["sudoku.duplicates"].exists)
+                Thread.sleep(forTimeInterval: 2)
+                attach(app, name: "Sudoku-\(language)-\(theme)")
+                app.buttons["sudoku.cell.\(cells[1])"].tap()
+                app.buttons["sudoku.erase"].tap()
+                app.buttons["sudoku.notes"].tap()
+                for corner in [1, 3, 7, 9] {
+                    app.buttons["sudoku.digit.\(corner)"].tap()
+                }
+                XCTAssertTrue(app.buttons["sudoku.cell.\(cells[1])"].isSelected)
+                Thread.sleep(forTimeInterval: 2)
+                let cornerNotes = XCTAttachment(screenshot: app.buttons["sudoku.cell.\(cells[1])"].screenshot())
+                cornerNotes.name = "CornerNotes-\(language)-\(theme)"
+                cornerNotes.lifetime = .keepAlways
+                add(cornerNotes)
+                app.terminate()
+            }
+        }
+    }
     @MainActor func testSudokuDuplicatesDoNotMoveKeypad() throws {
         for language in ["en", "id"] {
             let app = launch(language: language)
@@ -692,15 +759,19 @@ final class OffPlayUITests: XCTestCase {
         for id in ["sudoku.notes", "sudoku.erase"] {
             let button = app.buttons[id]
             XCTAssertTrue(button.exists)
-            XCTAssertFalse(button.frame.intersects(footer), "\(id) \(button.frame) intersects footer \(footer)")
+            XCTAssertLessThanOrEqual(button.frame.maxY, footer.minY, "\(id) must be fully above footer")
+            XCTAssertGreaterThanOrEqual(button.frame.minY, 0)
+            XCTAssertLessThanOrEqual(button.frame.maxY, app.frame.maxY)
         }
         let digits = (1...9).map { app.buttons["sudoku.digit.\($0)"].frame }
         for frame in digits {
             XCTAssertGreaterThanOrEqual(frame.width, 36)
             XCTAssertGreaterThanOrEqual(frame.height, 44)
-            XCTAssertFalse(frame.intersects(footer))
+            XCTAssertLessThanOrEqual(frame.maxY, footer.minY)
+            XCTAssertGreaterThanOrEqual(frame.minY, 0)
+            XCTAssertLessThanOrEqual(frame.maxY, app.frame.maxY)
         }
-        if app.frame.width - 24 >= 9 * 36 + 8 * 4 {
+        if app.frame.width - 24 >= 9 * 36 + 8 * 3 {
             XCTAssertEqual(digits[0].minY, digits[8].minY, accuracy: 1)
         } else {
             XCTAssertEqual(digits[0].minY, digits[4].minY, accuracy: 1)
