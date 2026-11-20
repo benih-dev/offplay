@@ -22,10 +22,23 @@ struct GamePlayView: View {
                             MetricView(label: "Active Time", value: GameTheme.time(session.elapsed)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.time")
                             if case let .klondike(game) = session.state { MetricView(label: "Moves", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
                         }
-                        if let feedback = store.feedback { Text(feedback).font(.footnote).foregroundStyle(GameTheme.danger).accessibilityIdentifier("session.feedback") }
+                        ZStack(alignment: .topLeading) {
+                            ForEach(GameFeedback.allCases, id: \.self) { feedback in
+                                Text(feedback.localizedMessage).hidden()
+                            }
+                            if let feedback = store.feedback {
+                                Text(feedback.localizedMessage)
+                                    .foregroundStyle(GameTheme.danger)
+                                    .accessibilityIdentifier("session.feedback")
+                            }
+                        }
+                        .font(.footnote)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     GameCatalog.board(id).id(session.id).disabled(session.outcome != nil)
+                        .accessibilityElement(children: .contain)
+                        .accessibilityIdentifier("session.board")
                 }
                 .padding(.horizontal, 12).padding(.vertical, 12)
             }
@@ -50,6 +63,9 @@ struct GamePlayView: View {
                 .padding(.horizontal, 12).padding(.vertical, 8).background(GameTheme.canvas)
             }
             .background(GameTheme.canvas)
+            .onChange(of: store.feedback) { _, message in
+                if let message { AccessibilityNotification.Announcement(message.localizedMessage).post() }
+            }
             .navigationTitle(id.name).navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
             .toolbar {

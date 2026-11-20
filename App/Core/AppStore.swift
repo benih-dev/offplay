@@ -9,6 +9,17 @@ enum AppModal: String, Identifiable {
     var id: String { rawValue }
 }
 
+enum GameFeedback: CaseIterable {
+    case invalidMove, incorrectWord
+
+    var localizedMessage: String {
+        switch self {
+        case .invalidMove: String(localized: "That move isn’t allowed.")
+        case .incorrectWord: String(localized: "Not quite. Rearrange the letters and try again.")
+        }
+    }
+}
+
 @MainActor @Observable final class AppStore {
     private(set) var library: GameLibrary
     private(set) var content: GameContent?
@@ -18,7 +29,7 @@ enum AppModal: String, Identifiable {
     private(set) var activeID: GameID?
     var path: [GameID] = []
     var modal: AppModal?
-    var feedback: String?
+    private(set) var feedback: GameFeedback?
     private var sceneActive = true
     private var timeStamp: TimeInterval?
     private var saveTicks = 0
@@ -109,7 +120,7 @@ enum AppModal: String, Identifiable {
         guard sceneActive, modal == nil, activeID == id else { return false }
         flushTime()
         guard library.act(on: id, action) else {
-            feedback = String(localized: "That move isn’t allowed.")
+            feedback = .invalidMove
             haptic(.error)
             return false
         }
@@ -118,7 +129,7 @@ enum AppModal: String, Identifiable {
             timeStamp = nil
             haptic(result == .won ? .success : .error)
         } else if submittingWord {
-            feedback = String(localized: "Not quite. Rearrange the letters and try again.")
+            feedback = .incorrectWord
             haptic(.error)
         } else if library.hapticsEnabled { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
         resetClock()
