@@ -414,6 +414,25 @@ final class OffPlayUITests: XCTestCase {
         print("BOARD MEASUREMENT mines 16 columns: 36.0pt on \(app.frame.width)pt screen (scrolling)")
     }
 
+    @MainActor func testKlondikeColumnsFitScreen() {
+        let app = launch()
+        open("klondike", in: app)
+        let cards = (0..<7).map { column in
+            app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "cards.tableau.\(column).")).firstMatch
+        } + [app.buttons["cards.stock"], app.buttons["cards.waste"]]
+            + (0..<4).map { app.buttons["cards.foundation.\($0)"] }
+        for card in cards {
+            XCTAssertTrue(card.exists)
+            XCTAssertGreaterThanOrEqual(card.frame.width, 44)
+            XCTAssertGreaterThanOrEqual(card.frame.minX, app.frame.minX)
+            XCTAssertLessThanOrEqual(card.frame.maxX, app.frame.maxX)
+            XCTAssertGreaterThanOrEqual(card.frame.minY, app.frame.minY)
+            XCTAssertLessThanOrEqual(card.frame.maxY, app.frame.maxY)
+        }
+        print("BOARD MEASUREMENT klondike 7 columns: \(cards[6].frame.width)pt cards on \(app.frame.width)pt screen; last column maxX \(cards[6].frame.maxX), last foundation maxX \(cards.last!.frame.maxX)")
+        attach(app, name: "Fitted Klondike")
+    }
+
     @MainActor func testSudokuFullDigitPadIsReachable() {
         let app = launch()
         open("sudoku", in: app)
