@@ -53,7 +53,6 @@ final class OffPlayUITests: XCTestCase {
             XCTAssertFalse(emptyFoundation.isEnabled, "Re-tapping a selected pile should clear selection")
         }
     }
-    }
 
     @MainActor private func endBlockGrid(in app: XCUIApplication) throws {
         var library = GameLibrary(seed: 42)
