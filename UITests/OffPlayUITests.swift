@@ -21,6 +21,9 @@ final class OffPlayUITests: XCTestCase {
                 for direction in ["left", "up", "right", "down", "left", "up", "left", "down"] {
                     app.buttons["slide.\(direction)"].tap()
                 }
+                let board = app.descendants(matching: .any)["slide.board"]
+                let values = Set(board.staticTexts.allElementsBoundByIndex.compactMap { Int($0.label.components(separatedBy: ", ").last ?? "") }.filter { $0 > 0 })
+                XCTAssertGreaterThanOrEqual(values.count, 3)
                 Thread.sleep(forTimeInterval: 2)
                 attach(app, name: "2048-\(language)-\(theme)")
                 app.terminate()

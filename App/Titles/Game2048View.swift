@@ -19,12 +19,12 @@ struct Game2048View: View {
                                 .font(.system(.title2, design: .rounded).bold()).minimumScaleFactor(0.4).lineLimit(1)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .aspectRatio(1, contentMode: .fit)
-                                .background(tile == 0 ? Self.emptyCell : GameMenuTheme.paper)
-                                .foregroundStyle(GameMenuTheme.ink)
+                                .background(tileFill(tile))
+                                .foregroundStyle(tile >= 128 ? GameMenuTheme.paper : GameMenuTheme.ink)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 12)
-                                        .strokeBorder(tile == 0 ? GameMenuTheme.boardEdge(.game2048).opacity(0.35) : GameMenuTheme.ink.opacity(tile >= 128 ? 0.8 : 0.2), style: StrokeStyle(lineWidth: tile >= 128 ? 2 : 1, dash: tile == 0 ? [3, 3] : []))
+                                        .strokeBorder(tile == 0 ? GameMenuTheme.boardEdge(.game2048).opacity(0.35) : (tile >= 128 ? GameMenuTheme.paper.opacity(tile >= 2048 ? 1 : 0.45) : GameMenuTheme.ink.opacity(0.2)), style: StrokeStyle(lineWidth: tile >= 2048 ? 3 : (tile >= 128 ? 2 : 1), dash: tile == 0 ? [3, 3] : []))
                                 }
                                 .accessibilityLabel("Row \(index / 4 + 1), column \(index % 4 + 1), \(tile == 0 ? String(localized: "empty") : String(tile))")
                         }
@@ -61,6 +61,26 @@ struct Game2048View: View {
                 }
             }.onAppear { keyboardFocus = true }
         }
+    }
+
+    private func tileFill(_ value: Int) -> Color {
+        guard value != 0 else { return Self.emptyCell }
+        guard value < 128 else { return GameMenuTheme.ink }
+        let tint: CGFloat = switch value {
+        case 2: 0
+        case 4: 0.10
+        case 8: 0.20
+        case 16: 0.30
+        case 32: 0.40
+        default: 0.46
+        }
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(GameMenuTheme.ink).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        let ink = (red, green, blue)
+        return Color(uiColor: UIColor { traits in
+            let amount = traits.userInterfaceStyle == .dark ? 0.12 + 0.74 * tint : tint
+            return UIColor(red: 1 + (ink.0 - 1) * amount, green: 1 + (ink.1 - 1) * amount, blue: 1 + (ink.2 - 1) * amount, alpha: 1)
+        })
     }
 
     private func move(_ direction: SlideDirection) {
