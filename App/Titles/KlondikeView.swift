@@ -15,7 +15,7 @@ struct KlondikeView: View {
             let hiddenHeight = cardWidth * 18 / 48
             let isOverflowing = cardWidth * 7 + 24 + 16 > availableWidth
             VStack(spacing: 12) {
-                Text("Tap a card, then its destination column or foundation.").font(.footnote).foregroundStyle(GameTheme.secondary)
+                Text("Tap a card, then its destination column or foundation.").font(.footnote).foregroundStyle(GameMenuTheme.secondary)
                 ScrollView(.horizontal) {
                   HStack(alignment: .top, spacing: 4) {
                     VStack(spacing: 4) {
@@ -25,14 +25,15 @@ struct KlondikeView: View {
                                 guard case var .klondike(current) = state else { return false }
                                 let changed = current.draw(); state = .klondike(current); return changed
                             }
-                        } label: { CardFace(card: nil, placeholder: game.stock.isEmpty ? "↻" : "▤", selected: false, width: cardWidth, height: cardHeight) }
+                        } label: { CardFace(card: nil, placeholder: game.stock.isEmpty ? "↻" : "", selected: false, faceDown: !game.stock.isEmpty, width: cardWidth, height: cardHeight) }
                             .buttonStyle(BoardButtonStyle()).disabled(game.stock.isEmpty && game.waste.isEmpty).accessibilityLabel(game.stock.isEmpty ? LocalizedStringKey("Recycle the stock") : "Draw from the stock")
                             .accessibilityIdentifier("cards.stock")
-                        Text(String(game.stock.count)).font(.caption2).frame(height: countHeight)
+                        Text(String(game.stock.count)).font(.caption2).foregroundStyle(GameMenuTheme.secondary).frame(height: countHeight)
                     }
                     Button { selected = selected == .waste ? nil : .waste } label: {
                         CardFace(card: game.waste.last, placeholder: "", selected: selected == .waste, width: cardWidth, height: cardHeight)
                     }.buttonStyle(BoardButtonStyle()).disabled(game.waste.isEmpty).accessibilityLabel("Waste pile").accessibilityIdentifier("cards.waste")
+                        .accessibilityAddTraits(selected == .waste ? .isSelected : [])
                     Spacer(minLength: cardWidth)
                     ForEach(CardSuit.allCases, id: \.rawValue) { suit in
                         Button {
@@ -42,13 +43,16 @@ struct KlondikeView: View {
                         } label: {
                             CardFace(card: game.foundations[suit.rawValue].last, placeholder: suit.symbol, selected: selected == .foundation(suit), width: cardWidth, height: cardHeight)
                         }.buttonStyle(BoardButtonStyle()).disabled(selected == nil && game.foundations[suit.rawValue].isEmpty).accessibilityLabel("Foundation: \(suit.localizedName)").accessibilityIdentifier("cards.foundation.\(suit.rawValue)")
+                            .accessibilityAddTraits(selected == .foundation(suit) ? .isSelected : [])
                     }
                 }
                   .frame(minWidth: max(0, availableWidth - 16))
                   .padding(.horizontal, 8)
+                  .padding(.top, 4)
                 }
                 .scrollDisabled(!isOverflowing)
                 .frame(height: cardHeight + countHeight + 8)
+                .accessibilityIdentifier("cards.piles")
                 BoardViewport(height: max(220, (game.tableau.map { column in column.reduce(CGFloat(0)) { $0 + ($1.faceUp ? cardHeight : hiddenHeight) + 3 } }.max() ?? cardHeight) + 16)) {
                     HStack(alignment: .top, spacing: 4) {
                         ForEach(0..<7, id: \.self) { column in
@@ -66,9 +70,10 @@ struct KlondikeView: View {
                                             CardFace(card: card, placeholder: "", selected: selected == .tableau(column: column, index: index), width: cardWidth, height: cardHeight)
                                         }.buttonStyle(BoardButtonStyle()).accessibilityLabel("\(card.label) of \(card.suit.localizedName), column \(column + 1)")
                                             .accessibilityIdentifier("cards.tableau.\(column).\(index)")
+                                            .accessibilityAddTraits(selected == .tableau(column: column, index: index) ? .isSelected : [])
                                     } else {
-                                        RoundedRectangle(cornerRadius: 5).fill(GameTheme.accentFill).frame(width: cardWidth, height: hiddenHeight)
-                                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(GameTheme.line, lineWidth: 1))
+                                        RoundedRectangle(cornerRadius: 8).fill(GameMenuTheme.face(.klondike)).frame(width: cardWidth, height: hiddenHeight)
+                                            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(GameMenuTheme.ink, lineWidth: 2))
                                             .accessibilityElement().accessibilityLabel("Face-down card, column \(column + 1)")
                                     }
                                 }
@@ -99,9 +104,11 @@ struct KlondikeView: View {
 }
 
 private struct CardFace: View {
+    @Environment(\.colorScheme) private var colorScheme
     let card: PlayingCard?
     let placeholder: String
     let selected: Bool
+    var faceDown = false
     var width: CGFloat = 48
     var height: CGFloat = 68
     var body: some View {
@@ -112,9 +119,15 @@ private struct CardFace: View {
             } else { Text(placeholder).font(.title3) }
         }
         .frame(width: width, height: height)
-        .background(selected ? GameTheme.accentFill : GameTheme.surface)
-        .foregroundStyle(card?.suit.isRed == true ? GameTheme.danger : GameTheme.ink)
+        .background(card != nil ? GameMenuTheme.paper : faceDown ? GameMenuTheme.face(.klondike) : GameMenuTheme.boardWell(.klondike))
+        .foregroundStyle(card == nil ? GameMenuTheme.boardEdge(.klondike) : card?.suit.isRed == true ? GameMenuTheme.redInk : GameMenuTheme.ink)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(selected ? GameTheme.accent : GameTheme.line, lineWidth: selected ? 2 : 1))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8).strokeBorder(
+                selected && colorScheme == .dark ? GameMenuTheme.boardEdge(.klondike) : card != nil || faceDown ? GameMenuTheme.ink : GameMenuTheme.boardEdge(.klondike),
+                style: StrokeStyle(lineWidth: selected ? 4 : 2, dash: card == nil && !faceDown ? [5, 3] : [])
+            )
+        }
+        .offset(y: selected ? -4 : 0)
     }
 }
