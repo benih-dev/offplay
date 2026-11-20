@@ -62,7 +62,7 @@ struct StatisticsView: View {
                 stat("Losses", String(stats.lost))
                 stat("Win rate", stats.winRate.map { String(format: "%.0f%%", $0 * 100) } ?? String(localized: "No results yet"), labelID: "stats.winRate.label")
                 stat("Streak", String(stats.streak), labelID: "stats.streak.label")
-                stat("Longest Streak", String(stats.longestStreak))
+                stat("Longest Streak", String(stats.longestStreak), labelID: "stats.longestStreak.label")
             }
         }.padding(.vertical, 8)
     }

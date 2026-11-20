@@ -16,13 +16,19 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["catalog.statistics"].tap()
         let winRate = app.staticTexts["stats.winRate.label"].firstMatch
         let streak = app.staticTexts["stats.streak.label"].firstMatch
+        let longestStreak = app.staticTexts["stats.longestStreak.label"].firstMatch
         for _ in 0..<16 where !streak.isHittable { app.swipeUp(velocity: .slow) }
         XCTAssertTrue(winRate.isHittable)
         XCTAssertTrue(streak.isHittable)
+        XCTAssertTrue(longestStreak.isHittable)
+        let offset = (app.frame.height * 0.54 - winRate.frame.midY) / app.frame.height
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5 + offset)))
         Thread.sleep(forTimeInterval: 2)
         attach(app, name: "Indonesian Statistics")
         XCTAssertEqual(winRate.label, "Tingkat menang")
         XCTAssertEqual(streak.label, "Beruntun")
+        XCTAssertEqual(longestStreak.label, "Beruntun terpanjang")
     }
 
     @MainActor func test2048RestartKeepsHighScore() throws {
