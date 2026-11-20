@@ -490,6 +490,49 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["session.result"].exists)
     }
 
+    @MainActor func testWordScrambleTilesFitAboveFooter() throws {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("wordScramble", in: app)
+                let footer = app.otherElements["session.footer"]
+                XCTAssertTrue(footer.exists)
+                XCTAssertTrue(app.buttons["session.new"].isHittable)
+                let slots = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.answer.'")).allElementsBoundByIndex
+                let letters = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.letter.'")).allElementsBoundByIndex
+                XCTAssertGreaterThanOrEqual(slots.count, 4)
+                XCTAssertEqual(slots.count, letters.count)
+                let submit = app.buttons["word.submit"]
+                for control in slots + letters + [submit] {
+                    XCTAssertTrue(control.exists)
+                    XCTAssertGreaterThanOrEqual(control.frame.width, 36)
+                    XCTAssertGreaterThanOrEqual(control.frame.height, 48)
+                    XCTAssertGreaterThanOrEqual(control.frame.minX, app.frame.minX)
+                    XCTAssertLessThanOrEqual(control.frame.maxX, app.frame.maxX)
+                    XCTAssertLessThanOrEqual(control.frame.maxY, footer.frame.minY, control.identifier)
+                }
+                for tiles in [slots, letters] {
+                    let firstTile = try XCTUnwrap(tiles.first)
+                    for tile in tiles {
+                        XCTAssertEqual(tile.frame.midY, firstTile.frame.midY, accuracy: 1)
+                    }
+                }
+
+                let letter = app.buttons["word.letter.0"]
+                let slot = app.buttons["word.answer.0"]
+                XCTAssertTrue(letter.isHittable)
+                letter.tap()
+                XCTAssertFalse(letter.isEnabled)
+                XCTAssertTrue(slot.isEnabled)
+                attach(app, name: "Word Scramble \(language) \(theme)")
+                slot.tap()
+                XCTAssertTrue(letter.isEnabled)
+                XCTAssertFalse(slot.isEnabled)
+                app.terminate()
+            }
+        }
+    }
+
     @MainActor func testWordScrambleWinShowsCleanSolvedState() throws {
         let app = launch()
         open("wordScramble", in: app)
