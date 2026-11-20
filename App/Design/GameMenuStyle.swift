@@ -26,6 +26,24 @@ enum GameMenuTheme {
     static let blue = adaptive(0x79c8ee, 0x74b4d7)
     static let blueFill = adaptive(0xb9e5fb, 0x9ecde4)
     static let blueInk = color(0x164f76)
+    static let mineCovered = adaptive(0x168458, 0x28533e)
+    static let mineSurface = adaptive(0xffffff, 0x202e32)
+    static let mineSymbol = adaptive(0xffffff, 0xdff3fc)
+    static let mineRed = adaptive(0xa32e38, 0xff9486)
+    static let mineExplosion = color(0xa32e38)
+
+    static func mineNumber(_ count: Int) -> Color {
+        switch count {
+        case 1: adaptive(0x164f76, 0x79c8ee)
+        case 2: adaptive(0x0d5b3d, 0x70d99b)
+        case 3: mineRed
+        case 4: adaptive(0x593f86, 0xc9aff2)
+        case 5: adaptive(0x843f25, 0xefb18d)
+        case 6: adaptive(0x146269, 0x82d4d3)
+        case 7: adaptive(0x46373f, 0xf0b7d7)
+        default: text
+        }
+    }
 
     static let unit: CGFloat = 4
     static let inset: CGFloat = 16
