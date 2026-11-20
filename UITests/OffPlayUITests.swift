@@ -181,9 +181,35 @@ final class OffPlayUITests: XCTestCase {
         assertAppearance(in: app, light: true)
     }
 
-    @MainActor private func assertAppearance(in app: XCUIApplication, light: Bool, file: StaticString = #filePath, line: UInt = #line) {
+    @MainActor func testCatalogUtilityFollowsAppearanceChanges() {
+        let app = launch()
+        let settings = app.buttons["catalog.settings"]
+        assertAppearance(in: settings, light: true, sampleButtonFill: true)
+        settings.tap()
+        app.buttons["settings.theme.dark"].tap()
+        app.buttons["settings.done"].tap()
+        assertAppearance(in: settings, light: false, sampleButtonFill: true)
+        settings.tap()
+        app.buttons["settings.theme.light"].tap()
+        app.buttons["settings.done"].tap()
+        assertAppearance(in: settings, light: true, sampleButtonFill: true)
+    }
+
+    @MainActor private func assertAppearance(
+        in element: XCUIElement,
+        light: Bool,
+        sampleButtonFill: Bool = false,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
         let matches = NSPredicate { _, _ in
-            guard let image = app.screenshot().image.cgImage else { return false }
+            guard element.isHittable, var image = element.screenshot().image.cgImage else { return false }
+            if sampleButtonFill {
+                // Sample inside the outline but outside the centered symbol.
+                let sample = CGRect(x: image.width / 6, y: image.height / 2, width: 1, height: 1)
+                guard let fill = image.cropping(to: sample) else { return false }
+                image = fill
+            }
             var pixel = [UInt8](repeating: 0, count: 4)
             let brightness = pixel.withUnsafeMutableBytes { bytes -> Double in
                 guard let context = CGContext(data: bytes.baseAddress, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return 0 }

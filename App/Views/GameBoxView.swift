@@ -97,8 +97,8 @@ struct GameBoxView: View {
                 .font(.system(size: logoSize, weight: .black, design: .rounded))
                 .tracking(-2)
                 .foregroundStyle(GameMenuTheme.brand)
-                .shadow(color: GameMenuTheme.paper, radius: 0, y: GameMenuTheme.edge)
-                .shadow(color: GameMenuTheme.greenDeep, radius: 0, y: GameMenuTheme.unit)
+                .shadow(color: GameMenuTheme.brandRim, radius: 0, y: GameMenuTheme.edge)
+                .shadow(color: GameMenuTheme.brandDepth, radius: 0, y: GameMenuTheme.unit)
                 .lineLimit(1)
                 .minimumScaleFactor(0.4)
                 .frame(maxWidth: .infinity)
@@ -136,7 +136,7 @@ struct GameBoxView: View {
                     .frame(minHeight: GameMenuTheme.target)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .buttonStyle(GameMenuButtonStyle(fill: GameMenuTheme.yellow))
+            .buttonStyle(GameMenuButtonStyle(role: .shuffle))
             .accessibilityLabel("Open a random game")
             .accessibilityIdentifier("catalog.random")
         }
@@ -164,7 +164,7 @@ struct GameBoxView: View {
             .padding(GameMenuTheme.unit * 2)
             .frame(maxWidth: .infinity, alignment: .top)
         }
-        .buttonStyle(GameMenuButtonStyle(fill: GameMenuTheme.face(id), radius: GameMenuTheme.radius))
+        .buttonStyle(GameMenuButtonStyle(role: .game(id)))
         .accessibilityIdentifier("catalog.\(id.rawValue)")
         .accessibilityLabel("\(id.name), \(status(id))")
         .accessibilityHint("Opens the game")
