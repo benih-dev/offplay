@@ -9,33 +9,38 @@ struct StatisticsView: View {
                 ForEach(GameID.allCases) { id in
                     let stats = store.library.stats(id)
                     Section(id.name) {
-                        if stats.total.started == 0 { Text("No sessions played yet.").foregroundStyle(GameTheme.secondary).accessibilityIdentifier("stats.empty.\(id.rawValue)") }
-                        stat("Sessions Started", String(stats.total.started))
-                        stat("Sessions Completed", String(stats.total.completed))
-                        stat("Abandoned", String(stats.total.abandoned))
-                        stat("Active Time", GameTheme.time(stats.total.activeTime))
-                        switch id {
-                        case .blockGrid, .game2048:
-                            stat("High Score", stats.total.highScore.map(String.init) ?? String(localized: "No record yet"), id: "stats.\(id.rawValue).highScore")
-                            if id == .game2048 {
-                                stat("Highest Final Tile", stats.total.highestTile.map(String.init) ?? String(localized: "No record yet"), id: "stats.game2048.highestTile")
-                                stat("Sessions Reaching 2048", String(stats.total.target2048Count))
-                            }
-                        case .klondike:
-                            stat("Wins", String(stats.total.won))
-                            bestTime(stats.total)
-                            stat("Fewest Moves to Win", stats.total.fewestMoves.map(String.init) ?? String(localized: "No record yet"))
-                        case .sudoku:
-                            ForEach(SudokuDifficulty.allCases) { level in
-                                group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: false)
-                            }
-                        case .minesweeper:
-                            ForEach(MineDifficulty.allCases) { level in
-                                group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: true)
-                            }
-                        case .wordScramble:
-                            ForEach(4...8, id: \.self) { length in
-                                group(Text("\(length) letters"), stats.groups[String(length)] ?? GameStatistics(), mines: false)
+                        if stats.total.started == 0 {
+                            Text("No sessions played yet.")
+                                .foregroundStyle(GameTheme.secondary)
+                                .accessibilityIdentifier("stats.empty.\(id.rawValue)")
+                        } else {
+                            stat("Sessions Started", String(stats.total.started), id: "stats.\(id.rawValue).started")
+                            stat("Sessions Completed", String(stats.total.completed))
+                            stat("Abandoned", String(stats.total.abandoned))
+                            stat("Active Time", GameTheme.time(stats.total.activeTime))
+                            switch id {
+                            case .blockGrid, .game2048:
+                                stat("High Score", stats.total.highScore.map(String.init) ?? String(localized: "No record yet"), id: "stats.\(id.rawValue).highScore")
+                                if id == .game2048 {
+                                    stat("Highest Final Tile", stats.total.highestTile.map(String.init) ?? String(localized: "No record yet"), id: "stats.game2048.highestTile")
+                                    stat("Sessions Reaching 2048", String(stats.total.target2048Count))
+                                }
+                            case .klondike:
+                                stat("Wins", String(stats.total.won))
+                                bestTime(stats.total)
+                                stat("Fewest Moves to Win", stats.total.fewestMoves.map(String.init) ?? String(localized: "No record yet"))
+                            case .sudoku:
+                                ForEach(SudokuDifficulty.allCases) { level in
+                                    group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: false)
+                                }
+                            case .minesweeper:
+                                ForEach(MineDifficulty.allCases) { level in
+                                    group(Text(level.localizedName), stats.groups[level.rawValue] ?? GameStatistics(), mines: true)
+                                }
+                            case .wordScramble:
+                                ForEach(4...8, id: \.self) { length in
+                                    group(Text("\(length) letters"), stats.groups[String(length)] ?? GameStatistics(), mines: false)
+                                }
                             }
                         }
                     }.listRowBackground(GameTheme.surface)
