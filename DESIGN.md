@@ -2,7 +2,7 @@
 
 OffPlay memakai gaya game kasual yang ceria: latar biru langit, huruf membulat yang tebal, dan pilihan game seperti kepingan papan. Ilustrasi permainan menjadi pusat perhatian dan membantu pemain mengenali enam game.
 
-Dokumen ini mencatat desain menu koleksi OffPlay di SwiftUI, berdasarkan prototipe HTML. Nilai native mengacu pada `GameMenuTheme`, `GameMenuButtonStyle`, `GameBoxView`, dan `GameMenuPreview`. Layar gameplay tidak termasuk dalam cakupan ini.
+Dokumen ini mencatat desain menu koleksi OffPlay di SwiftUI, berdasarkan prototipe HTML. Nilai native mengacu pada `GameMenuTheme`, `GameMenuButtonStyle`, `GameBoxView`, dan `GameMenuPreview`. Untuk permainan aktif, lihat bagian [Layar gameplay](#layar-gameplay).
 
 ## Arah visual
 
@@ -29,6 +29,7 @@ Arah ini mengikuti permintaan untuk membuat OffPlay terasa lebih ceria. Palet da
 | `utilitySurface` | `#FFFFFF` | `#284653` | Permukaan Statistik dan Pengaturan |
 | `utilityOutline` | `#173C43` | `#82ADBC` | Garis tombol utilitas |
 | `depth` | `#173C43` | `#091A21` | Bayangan keras tombol |
+| `feedbackInk` | `#46373F` | `#46373F` | Tinta merah untuk umpan balik pada header gameplay |
 | `brandRim` | `#FFFFFF` | `#2F675B` | Lapisan tengah wordmark |
 | `brandDepth` | `#0D5B3D` | `#091A21` | Lapisan belakang wordmark |
 
@@ -157,11 +158,34 @@ Gunakan bahasa yang singkat, ramah, dan langsung mengajak bermain. Contoh label:
 
 Target kontras merupakan persyaratan pemeliharaan; dokumen ini tidak menyatakan hasil audit kontras atau pengujian simulator.
 
+## Layar gameplay
+
+Gunakan keluarga warna kepingan menu sebagai aksen pada chrome bersama, bukan pada isi sel. `GamePlayView` memasang environment `gameplayGame` sesuai `GameID`; nilai awal `nil` mempertahankan tampilan netral untuk sheet, Pengaturan, dan Statistik.
+
+Semua token warna berikut berasal dari `GameMenuTheme`, kecuali permukaan sel netral yang masih memakai `GameTheme`. Pemetaan `face(id)` dan `well(id)` mengikuti tabel warna permainan di atas, dalam mode terang maupun gelap.
+
+| Elemen | Token terang / gelap | Penggunaan |
+| --- | --- | --- |
+| Kanvas dan footer | `canvas` / `canvas` | Latar biru langit / biru tua `#172D36` |
+| Kartu header | `face(id)`, `ink`, `depth` / token yang sama | Hasil, metrik termasuk label, dan umpan balik; radius 20 pt, garis 2 pt, bayangan keras 6 pt pada bentuk dasar |
+| Bingkai papan | `well(id)`, `ink` / token yang sama | Isian area luar sel, radius 20 pt dan garis 2 pt; ukuran sel serta ruang papan tetap |
+| Tombol utama | `face(id)`, `ink`, `depth` / token yang sama | Label gelap, garis 2 pt, radius 12 pt; aksi destruktif memakai `redInk` dengan label `paper` |
+| Tombol sekunder | `utilitySurface`, `text`, `utilityOutline`, `depth` / token yang sama | Permukaan putih / biru tua, label dan garis adaptif |
+| Sel papan | `paper` atau permukaan netral, teks keluarga `ink` / permukaan netral gelap dengan teks kontras | Isi tenang, tanpa warna keluarga game di belakang angka |
+
+Tombol mempertahankan tinggi minimum 48 pt dan interaksi menu: bayangan 6 pt, saat ditekan turun 4 pt dengan bayangan 2 pt. Reduce Motion meniadakan perpindahan dan animasi, memakai opacity 0,8 saat ditekan. Tombol nonaktif memakai opacity 0,5. Ikon Home dan aksi Pause memakai `text`.
+
+Jaga kontras angka Sudoku dan Minesweeper minimal 4,5:1 pada sel netral. Kesalahan dan umpan balik memakai tinta merah, bukan warna bahaya terang di atas kartu berwarna. Header memakai `feedbackInk` (`#46373F`) dengan kontras minimal 4,5:1 pada semua `face(id)`. Hasil menang tetap memakai `ink` agar terbaca. Seleksi dan keadaan tidak boleh disampaikan lewat warna saja: sertakan garis, simbol, atau label.
+
+Interior papan tiap game mengikuti aturan sel tenang.
+
 ## Pemeliharaan
 
 Sumber implementasi native dalam repositori ini:
 
 - `App/Design/GameMenuStyle.swift`: token warna, ukuran, dan gaya tombol.
+- `App/Design/GameTheme.swift`: environment gameplay, metrik, bingkai papan, dan gaya tombol aksi bersama.
+- `App/Views/GamePlayView.swift`: kartu header, kanvas, footer, dan aksen chrome gameplay.
 - `App/Views/GameBoxView.swift`: susunan menu, tipografi, navigasi, dan status sesi.
 - `App/Views/GameMenuPreview.swift`: ilustrasi keenam papan.
 - `App/Localizable.xcstrings`: teks terjemahan.

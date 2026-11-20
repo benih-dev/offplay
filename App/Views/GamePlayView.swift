@@ -14,7 +14,7 @@ struct GamePlayView: View {
                         if let result = session.outcome {
                             Text(id.localizedOutcome(result))
                                 .font(.system(.title, design: .rounded).bold())
-                                .foregroundStyle(result == .won ? GameTheme.accent : GameTheme.ink)
+                                .foregroundStyle(GameMenuTheme.ink)
                                 .accessibilityIdentifier("session.result")
                         }
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: textSize.isAccessibilitySize ? 260 : 135), spacing: 16)], alignment: .leading, spacing: 12) {
@@ -28,7 +28,7 @@ struct GamePlayView: View {
                             }
                             if let feedback = store.feedback {
                                 Text(feedback.localizedMessage)
-                                    .foregroundStyle(GameTheme.danger)
+                                    .foregroundStyle(GameMenuTheme.feedbackInk)
                                     .accessibilityIdentifier("session.feedback")
                             }
                         }
@@ -36,6 +36,14 @@ struct GamePlayView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(12)
+                    .foregroundStyle(GameMenuTheme.ink)
+                    .background {
+                        let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        shape.fill(GameMenuTheme.face(id))
+                            .shadow(color: GameMenuTheme.depth, radius: 0, y: 6)
+                            .overlay(shape.strokeBorder(GameMenuTheme.ink, lineWidth: 2))
+                    }
                     GameCatalog.board(id).id(session.id).disabled(session.outcome != nil)
                         .accessibilityElement(children: .contain)
                         .accessibilityIdentifier("session.board")
@@ -48,7 +56,7 @@ struct GamePlayView: View {
                         Image(systemName: "house").frame(width: 48, height: 48)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(GameTheme.accent)
+                    .foregroundStyle(GameMenuTheme.text)
                     .accessibilityLabel("Game Box").accessibilityIdentifier("session.back")
                     if [.klondike, .sudoku, .game2048].contains(id) {
                         Button("Undo") { store.undo(id) }
@@ -60,9 +68,10 @@ struct GamePlayView: View {
                     Button("New Game") { store.requestNewGame(id) }
                         .buttonStyle(ActionButtonStyle(primary: true)).accessibilityIdentifier("session.new")
                 }
-                .padding(.horizontal, 12).padding(.vertical, 8).background(GameTheme.canvas)
+                .padding(.horizontal, 12).padding(.vertical, 8).background(GameMenuTheme.canvas)
             }
-            .background(GameTheme.canvas)
+            .background(GameMenuTheme.canvas)
+            .environment(\.gameplayGame, id)
             .onChange(of: store.feedback) { _, message in
                 if let message { AccessibilityNotification.Announcement(message.localizedMessage).post() }
             }
@@ -70,7 +79,7 @@ struct GamePlayView: View {
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Pause") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).accessibilityIdentifier("session.pause")
+                    Button("Pause") { store.present(.pause) }.frame(minWidth: 48, minHeight: 48).foregroundStyle(GameMenuTheme.text).accessibilityIdentifier("session.pause")
                 }
             }
             .toolbar(.visible, for: .navigationBar)
