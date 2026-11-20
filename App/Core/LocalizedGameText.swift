@@ -2,6 +2,17 @@ import Foundation
 import OffPlayCore
 
 extension GameID {
+    var isScoreGame: Bool {
+        switch self {
+        case .blockGrid, .game2048: true
+        case .klondike, .sudoku, .minesweeper, .wordScramble: false
+        }
+    }
+
+    func localizedOutcome(_ outcome: SessionOutcome) -> String {
+        isScoreGame ? String(localized: "Session ended") : outcome.localizedName
+    }
+
     var localizedDescription: String {
         switch self {
         case .blockGrid: String(localized: "Place pieces and clear lines.")
