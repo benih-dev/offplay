@@ -19,6 +19,37 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertEqual(board.frame.integral, frame)
     }
 
+    @MainActor private func endBlockGrid(in app: XCUIApplication) throws {
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.blockGrid, content: try GameContent.bundled())
+        guard case var .blockGrid(game)? = library.session(.blockGrid)?.state else {
+            return XCTFail("Expected Block Grid session")
+        }
+        open("blockGrid", in: app)
+        XCTAssertFalse(app.staticTexts["session.result"].exists)
+        var moves = 0
+        while !game.isGameOver && moves < 100 {
+            let move = try XCTUnwrap((0..<3).flatMap { slot in
+                (0..<64).map { (slot: slot, cell: $0) }
+            }.first { game.canPlace(slot: $0.slot, row: $0.cell / 8, column: $0.cell % 8) })
+            app.buttons["block.piece.\(move.slot)"].tap()
+            app.buttons["block.cell.\(move.cell)"].tap()
+            XCTAssertTrue(game.place(slot: move.slot, row: move.cell / 8, column: move.cell % 8))
+            moves += 1
+        }
+        XCTAssertTrue(game.isGameOver)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor func testBlockGridEndedStatus() throws {
+        let app = launch()
+        XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Ready to play")
+        try endBlockGrid(in: app)
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Session ended")
+        app.buttons["session.back"].tap()
+        XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Session ended")
+    }
+
     @MainActor func testIndonesianStatisticsLabels() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-reset-data", "-theme", "light", "-AppleLanguages", "(id)", "-AppleLocale", "id_ID"]
@@ -274,9 +305,72 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Game Box Dark")
     }
 
+    @MainActor func testStatisticsOnlyShowRowsAfterPlaying() {
+        let app = launch()
+        let empty = app.staticTexts["stats.empty.blockGrid"]
+        let started = app.staticTexts["stats.blockGrid.started"]
+        let highScore = app.staticTexts["stats.blockGrid.highScore"]
+
+        app.buttons["catalog.statistics"].tap()
+        XCTAssertTrue(empty.waitForExistence(timeout: 5))
+        XCTAssertFalse(started.exists)
+        XCTAssertFalse(highScore.exists)
+        app.buttons["stats.done"].tap()
+
+        open("blockGrid", in: app)
+        app.buttons["block.piece.0"].tap()
+        app.buttons["block.cell.0"].tap()
+        app.buttons["session.back"].tap()
+
+        app.buttons["catalog.statistics"].tap()
+        XCTAssertTrue(started.waitForExistence(timeout: 5))
+        XCTAssertEqual(started.label, "1")
+        XCTAssertTrue(highScore.exists)
+        XCTAssertFalse(empty.exists)
+        XCTAssertTrue(app.staticTexts["stats.empty.klondike"].exists)
+        XCTAssertFalse(app.staticTexts["stats.klondike.started"].exists)
+    }
+
     @MainActor func testWordResultPersistsAndNewGameDoesNotAskToAbandon() throws {
         let app = launch()
         open("wordScramble", in: app)
+        try solveWord(in: app)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
+        attach(app, name: "Word Scramble Result")
+        app.buttons["session.back"].tap()
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "-reset-data" }
+        app.launch()
+        XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
+        open("wordScramble", in: app)
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
+        app.buttons["session.new"].tap()
+        XCTAssertFalse(app.buttons["new.confirm"].exists)
+        XCTAssertFalse(app.staticTexts["session.result"].exists)
+    }
+
+    @MainActor func testWordScrambleWinShowsCleanSolvedState() throws {
+        let app = launch()
+        open("wordScramble", in: app)
+        let answer = try solveWord(in: app)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["word.submit"].exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.letter.'")).firstMatch.exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.answer.'")).firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["word.hint"].exists)
+        let solved = app.descendants(matching: .any)["word.solved"]
+        XCTAssertTrue(solved.exists)
+        XCTAssertEqual(solved.value as? String, answer)
+        XCTAssertTrue(app.staticTexts["word.guesses"].exists)
+        attach(app, name: "Word Scramble Solved")
+        app.buttons["session.new"].tap()
+        XCTAssertTrue(app.buttons["word.letter.0"].waitForExistence(timeout: 5))
+        XCTAssertFalse(solved.exists)
+        XCTAssertTrue(app.buttons["word.submit"].exists)
+    }
+
+    @discardableResult @MainActor private func solveWord(in app: XCUIApplication) throws -> String {
         let content = try GameContent.bundled()
         var available: [(index: Int, letter: String)] = []
         for index in 0..<8 {
@@ -297,19 +391,7 @@ final class OffPlayUITests: XCTestCase {
         if !submit.isHittable { app.swipeUp() }
         XCTAssertTrue(submit.isEnabled)
         submit.tap()
-        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
-        attach(app, name: "Word Scramble Result")
-        app.buttons["session.back"].tap()
-        app.terminate()
-        app.launchArguments.removeAll { $0 == "-reset-data" }
-        app.launch()
-        XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
-        open("wordScramble", in: app)
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
-        app.buttons["session.new"].tap()
-        XCTAssertFalse(app.buttons["new.confirm"].exists)
-        XCTAssertFalse(app.staticTexts["session.result"].exists)
+        return answer
     }
 
     @MainActor func testSudokuNewGameShowsAllControlsWithoutScrolling() {
@@ -428,6 +510,25 @@ final class OffPlayUITests: XCTestCase {
         last.tap()
         XCTAssertTrue(last.label.contains("flagged"))
         print("BOARD MEASUREMENT mines 16 columns: 36.0pt on \(app.frame.width)pt screen (scrolling)")
+    }
+
+    @MainActor func testKlondikeColumnsFitScreen() {
+        let app = launch()
+        open("klondike", in: app)
+        let cards = (0..<7).map { column in
+            app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "cards.tableau.\(column).")).firstMatch
+        } + [app.buttons["cards.stock"], app.buttons["cards.waste"]]
+            + (0..<4).map { app.buttons["cards.foundation.\($0)"] }
+        for card in cards {
+            XCTAssertTrue(card.exists)
+            XCTAssertGreaterThanOrEqual(card.frame.width, 44)
+            XCTAssertGreaterThanOrEqual(card.frame.minX, app.frame.minX)
+            XCTAssertLessThanOrEqual(card.frame.maxX, app.frame.maxX)
+            XCTAssertGreaterThanOrEqual(card.frame.minY, app.frame.minY)
+            XCTAssertLessThanOrEqual(card.frame.maxY, app.frame.maxY)
+        }
+        print("BOARD MEASUREMENT klondike 7 columns: \(cards[6].frame.width)pt cards on \(app.frame.width)pt screen; last column maxX \(cards[6].frame.maxX), last foundation maxX \(cards.last!.frame.maxX)")
+        attach(app, name: "Fitted Klondike")
     }
 
     @MainActor func testSudokuFullDigitPadIsReachable() {
