@@ -51,6 +51,46 @@
         }
       }
     },
+    "What shall we play?": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mau main apa?"
+          }
+        }
+      }
+    },
+    "Six games, take your pick!": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "6 game, pilih sesukamu!"
+          }
+        }
+      }
+    },
+    "Shuffle": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acak"
+          }
+        }
+      }
+    },
+    "Open a random game": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka game secara acak"
+          }
+        }
+      }
+    },
     "About OffPlay": {
       "localizations": {
         "id": {
