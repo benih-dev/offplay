@@ -178,7 +178,7 @@ Jaga kontras angka Sudoku dan Minesweeper minimal 4,5:1 pada sel netral. Kesalah
 
 Footer tetap di bawah saat seluruh konten muat. Jika tinggi konten melebihi ruang aman, gulir konten dan footer bersama dalam urutan dokumen agar kontrol tidak tertutup footer. Jangan menambal tata letak dengan offset tetap. Numpad Sudoku memakai satu baris 1–9 bila sembilan tombol selebar minimal 36 pt muat; selain itu gunakan dua baris 1–5 dan 6–9 yang terpusat, dengan tinggi tombol 44 pt.
 
-Interior papan tiap game mengikuti aturan sel tenang. Khusus Minesweeper, sel tertutup memakai `mineCovered` hijau dengan penanda titik; sel terbuka memakai `mineSurface` putih / netral gelap, angka 1–8 memakai `mineNumber` berbeda dengan kontras minimal 4,5:1. Garis memakai `boardEdge(.minesweeper)`, bendera dan ranjau memakai `mineSymbol`, dan ledakan memakai `mineExplosion` merah dengan simbol putih.
+Interior papan tiap game mengikuti aturan sel tenang. Khusus Minesweeper, sel tertutup memakai `mineCovered` hijau dengan penanda titik; sel terbuka memakai `mineSurface` putih / netral gelap, angka 1–8 memakai `mineNumber` berbeda dengan kontras minimal 4,5:1. Garis memakai `mineGrid` (`#091A21` / `#76BE91`) dengan kontras minimal 3:1 pada kedua permukaan sel, bendera dan ranjau memakai `mineSymbol`, dan ledakan memakai `mineExplosion` merah dengan simbol putih.
 
 ## Pemeliharaan
 

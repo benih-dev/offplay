@@ -31,6 +31,7 @@ enum GameMenuTheme {
     static let mineSymbol = adaptive(0xffffff, 0xdff3fc)
     static let mineRed = adaptive(0xa32e38, 0xff9486)
     static let mineExplosion = color(0xa32e38)
+    static let mineGrid = adaptive(0x091a21, 0x76be91)
 
     static func mineNumber(_ count: Int) -> Color {
         switch count {

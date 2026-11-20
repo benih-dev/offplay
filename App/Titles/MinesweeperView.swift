@@ -29,7 +29,7 @@ struct MinesweeperView: View {
                                     .frame(width: size, height: size)
                                     .foregroundStyle(foreground(game, index))
                                     .background(background(game, index))
-                                    .overlay(Rectangle().stroke(GameMenuTheme.boardEdge(.minesweeper), lineWidth: 1))
+                                    .overlay(Rectangle().stroke(GameMenuTheme.mineGrid, lineWidth: 1))
                             }
                             .buttonStyle(BoardButtonStyle())
                             .accessibilityLabel("Row \(index / game.side + 1), column \(index % game.side + 1), \(description(game, index))")
