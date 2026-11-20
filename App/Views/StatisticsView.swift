@@ -47,8 +47,8 @@ struct StatisticsView: View {
         }
     }
 
-    private func stat(_ name: LocalizedStringKey, _ value: String, id: String? = nil) -> some View {
-        HStack(alignment: .top) { Text(name); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing).accessibilityIdentifier(id ?? "") }
+    private func stat(_ name: LocalizedStringKey, _ value: String, id: String? = nil, labelID: String = "") -> some View {
+        HStack(alignment: .top) { Text(name).accessibilityIdentifier(labelID); Spacer(minLength: 12); Text(value).monospacedDigit().foregroundStyle(GameTheme.secondary).multilineTextAlignment(.trailing).accessibilityIdentifier(id ?? "") }
     }
     private func bestTime(_ stats: GameStatistics) -> some View {
         stat("Best Winning Time", stats.bestTime.map(GameTheme.time) ?? String(localized: "No record yet"))
@@ -60,9 +60,9 @@ struct StatisticsView: View {
             bestTime(stats)
             if mines {
                 stat("Losses", String(stats.lost))
-                stat("Win rate", stats.winRate.map { String(format: "%.0f%%", $0 * 100) } ?? String(localized: "No results yet"))
-                stat("Streak", String(stats.streak))
-                stat("Longest Streak", String(stats.longestStreak))
+                stat("Win rate", stats.winRate.map { String(format: "%.0f%%", $0 * 100) } ?? String(localized: "No results yet"), labelID: "stats.winRate.label")
+                stat("Streak", String(stats.streak), labelID: "stats.streak.label")
+                stat("Longest Streak", String(stats.longestStreak), labelID: "stats.longestStreak.label")
             }
         }.padding(.vertical, 8)
     }
