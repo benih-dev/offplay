@@ -88,7 +88,7 @@ private struct TraySlot: View {
         }
         .overlay(alignment: .topTrailing) {
             if selected {
-                Image(systemName: "checkmark.circle.fill").font(.body.bold())
+                Image(systemName: "checkmark.circle.fill").font(.system(size: 17, weight: .bold))
                     .foregroundStyle(GameMenuTheme.ink).padding(6)
             }
         }
