@@ -3,6 +3,34 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testIndonesianStatisticsLabels() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-reset-data", "-theme", "light", "-AppleLanguages", "(id)", "-AppleLocale", "id_ID"]
+        app.launch()
+        XCTAssertTrue(app.buttons["catalog.statistics"].waitForExistence(timeout: 10))
+        open("minesweeper", in: app)
+        app.buttons["mines.cell.0"].tap()
+        app.buttons["session.new"].tap()
+        app.buttons["new.confirm"].tap()
+        app.buttons["session.back"].tap()
+        app.buttons["catalog.statistics"].tap()
+        let winRate = app.staticTexts["stats.winRate.label"].firstMatch
+        let streak = app.staticTexts["stats.streak.label"].firstMatch
+        let longestStreak = app.staticTexts["stats.longestStreak.label"].firstMatch
+        for _ in 0..<16 where !streak.isHittable { app.swipeUp(velocity: .slow) }
+        XCTAssertTrue(winRate.isHittable)
+        XCTAssertTrue(streak.isHittable)
+        XCTAssertTrue(longestStreak.isHittable)
+        let offset = (app.frame.height * 0.54 - winRate.frame.midY) / app.frame.height
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5 + offset)))
+        Thread.sleep(forTimeInterval: 2)
+        attach(app, name: "Indonesian Statistics")
+        XCTAssertEqual(winRate.label, "Tingkat menang")
+        XCTAssertEqual(streak.label, "Beruntun")
+        XCTAssertEqual(longestStreak.label, "Beruntun terpanjang")
+    }
+
     @MainActor func test2048RestartKeepsHighScore() throws {
         let app = launch()
         open("game2048", in: app)
