@@ -296,11 +296,13 @@ final class OffPlayUITests: XCTestCase {
 
     @MainActor private func assertNewGameControls(in app: XCUIApplication, difficultyIDs: [String], screenshot: String) {
         app.buttons["session.new"].tap()
-        XCTAssertTrue(app.buttons["new.confirm"].waitForExistence(timeout: 5))
+        let sheet = app.scrollViews.containing(.button, identifier: "new.confirm").firstMatch
+        XCTAssertTrue(sheet.waitForExistence(timeout: 5))
         attach(app, name: screenshot)
+        let viewport = sheet.frame.intersection(app.frame)
         for id in difficultyIDs + ["new.confirm", "new.cancel"] {
             let button = app.buttons[id]
-            XCTAssertTrue(button.isHittable && app.frame.contains(button.frame), "\(id) should be fully visible without scrolling")
+            XCTAssertTrue(button.isHittable && viewport.contains(button.frame), "\(id) should be fully visible without scrolling")
         }
         app.buttons["new.cancel"].tap()
         XCTAssertTrue(app.buttons["new.cancel"].waitForNonExistence(timeout: 5))
