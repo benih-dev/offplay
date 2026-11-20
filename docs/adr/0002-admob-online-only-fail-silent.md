@@ -1,6 +1,6 @@
 # Monetization with AdMob, ads shown only online and failing silently offline
 
-> Status: AdMob disetujui. Rincian perilaku SDK, privasi, dan Kadens Iklan masih draf; klaim pembayaran iklan di bawah belum diverifikasi. Lihat [Memeriksa batas AdMob, privasi, dan Remove Ads](../../.scratch/offplay-v1-design/issues/03-bukti-iklan-privasi.md).
+> Status: AdMob disetujui. Rincian perilaku SDK, privasi, dan Kadens Iklan masih draf; klaim pembayaran iklan di bawah belum diverifikasi. Lihat [Memeriksa batas AdMob, privasi, dan Remove Ads](https://github.com/benih-dev/offplay/issues/21).
 
 Ads use AdMob. Interstitial ads are shown only while the device is online per the Kadens Iklan; offline, ad requests fail silently and never block or gate a Judul. Remove Ads disables all ads.
 

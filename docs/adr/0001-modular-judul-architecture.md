@@ -1,6 +1,6 @@
 # Modular structure with each Judul as an independent module
 
-> Status: draf desain. Arah modular disetujui; rincian protokol dan batas modul menunggu spesifikasi pada [Kesiapan desain OffPlay v1.0](../../.scratch/offplay-v1-design/map.md).
+> Status: draf desain. Arah modular disetujui; rincian protokol dan batas modul menunggu spesifikasi pada [Kesiapan desain OffPlay v1.0](https://github.com/benih-dev/offplay/issues/14).
 
 Each Judul (Block Grid, Klondike Solitaire, etc.) lives as its own module behind a shared `GameModule` protocol (name, icon, `makeGameView()`, `makeStatsView()`). The shell app discovers and renders whichever modules are present.
 

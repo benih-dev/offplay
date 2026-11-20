@@ -23,11 +23,13 @@ xcodebuild -project OffPlay.xcodeproj -scheme OffPlay -sdk iphonesimulator \
   CODE_SIGNING_ALLOWED=NO test
 ```
 
-## Kontrak integrasi
+## Susunan scaffold pada baseline `b9ab538`
+
+[Kontrak inti OffPlay](architecture.md) menetapkan perilaku yang dinilai. Tabel ini menjelaskan cara kode baseline disusun, bukan hasil pengujian.
 
 | Bagian | Implementasi |
 |---|---|
-| Toolchain | Xcode 27.1 / Swift 6.4; source language mode Swift 6; deployment iOS 17 |
+| Toolchain | Mode bahasa Swift 6; deployment target iOS 17. Catat versi Xcode, Swift dan runtime simulator pada setiap verifikasi. |
 | UI dan navigasi | SwiftUI `NavigationStack`, `AppStore.path`, dan `AppModal`; `App/Titles/` memisahkan tampilan setiap Judul |
 | Aturan permainan | Swift package `OffPlayCore`, terpisah dari SwiftUI/UIKit; tiap Judul memiliki model data serta validasi langkah sendiri |
 | Pembaruan HUD | Observation pada `AppStore.library`; perubahan papan berasal dari tindakan pemain |
@@ -46,13 +48,13 @@ Simpanan berada di Application Support app pada perangkat. Board, statistik, Und
 
 ## Konten offline
 
-Bank Sudoku berisi 150 papan, 50 per kesulitan. Generator build-time di `Tools/ContentBuilder/` menghasilkan papan asli, memeriksa solusi tunggal, dan melakukan grading memakai singles, locked candidates/naked pairs, serta hidden pairs/naked triples. Runtime memilih dari bank tersimpan tanpa pengulangan sampai kumpulan habis.
+Bank Sudoku berisi 150 papan, 50 per kesulitan. `Tools/ContentBuilder/` membentuk varian dari satu papan dasar per kesulitan, memeriksa solusi tunggal dan menilai teknik penyelesaian. Jumlah entri bukan ukuran keragaman struktur teka-teki. Runtime memilih dari bank tersimpan tanpa pengulangan sampai kumpulan habis.
 
-Korpus bahasa Indonesia ditulis sebagai daftar kata mandiri di repo. `GameContent` memvalidasi huruf a-z, panjang 4–8, dan mengelompokkan anagram berdasarkan multiset huruf. Konten saat ini mempunyai 586 kelompok terverifikasi. Target minimum 300 kelompok diperiksa saat pemuatan dan pada tes konten.
+Korpus bahasa Indonesia disimpan di repo. `GameContent` memvalidasi huruf a-z, panjang 4–8, dan mengelompokkan anagram berdasarkan multiset huruf. Inventaris baseline menghitung 586 kelompok; minimum 300 diperiksa saat pemuatan dan pada tes konten. Hitungan itu bukan bukti kurasi bahasa atau hak pakai.
 
 ## Arah tampilan
 
-Dasar: **Hangat & Tenang**, sesuai keputusan visual yang sudah dikonfirmasi. Dials: **ENERGY 1 / RHYTHM 1 / MOTION 1**.
+Keputusan produk: **Hangat & Tenang**, teks mengikuti ukuran sistem, target sentuh minimal 48 pt, status tidak bergantung pada warna, dan kontrol berlabel VoiceOver. Getaran untuk langkah berhasil, kesalahan dan akhir Sesi dapat dimatikan; navigasi biasa tanpa getaran. Pilihan tema sistem/terang/gelap dan detail tampilan berikut adalah keputusan scaffold, bukan syarat tambahan.
 
 - Krem, permukaan putih dan aksen hijau mengikuti prototipe yang dipilih pemilik; tema gelap memakai pasangan warna yang terukur.
 - Tipografi sistem dan bentuk rounded pada label permainan menjaga keterbacaan serta dukungan Dynamic Type.
@@ -65,7 +67,9 @@ Dasar: **Hangat & Tenang**, sesuai keputusan visual yang sudah dikonfirmasi. Dia
 
 Audit After dan bukti simulator berada di `anti-slop/`.
 
-## Hasil verifikasi sesi implementasi
+## Riwayat sebelum baseline
+
+Butir berikut adalah laporan sesi terdahulu, bukan hasil uji ulang commit `b9ab538`. Untuk menilai baseline, jalankan perintah pengujian dan catat revisi, perangkat, runtime, hasil serta skenario yang belum tercakup. Periksa bermain tanpa jaringan dan simpan lintas peluncuran secara eksplisit. Lulus di simulator yang lebih baru bukan bukti lulus di runtime iOS 17.
 
 - Build Debug simulator dan Release iPhone berhasil.
 - 18 tes XCTest inti lulus: aturan enam permainan, Undo/undian, Sesi, penghitungan hasil, simpan/muat, pemulihan cadangan dan konten.
@@ -76,6 +80,7 @@ Audit After dan bukti simulator berada di `anti-slop/`.
 
 ## Sumber keputusan produk
 
-- [Menetapkan siklus Sesi dan perilaku langsung bermain](../.scratch/offplay-v1-design/issues/04-siklus-sesi.md)
-- [Menetapkan arah visual dan aksesibilitas alur Sesi](../.scratch/offplay-v1-design/issues/07-pengalaman-visual.md)
-- [Menetapkan batas aturan dan Statistik Pemain per Judul](../.scratch/offplay-v1-design/issues/08-aturan-statistik-judul.md)
+- [Menetapkan siklus Sesi dan perilaku langsung bermain](https://github.com/benih-dev/offplay/issues/22)
+- [Menetapkan arah visual dan aksesibilitas alur Sesi](https://github.com/benih-dev/offplay/issues/25)
+- [Menetapkan batas aturan dan Statistik Pemain per Judul](https://github.com/benih-dev/offplay/issues/26)
+- [Menetapkan penanganan celah bukti privasi SDK](https://github.com/benih-dev/offplay/issues/36)

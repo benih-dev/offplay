@@ -1,0 +1,44 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "BD489B92-F822-485A-A23A-4732A7CAB0FA",
+        "deviceName" : "t21-SE3",
+        "exportedFileName" : "ADBF6B9C-1FE2-47F0-BF49-5A6737C5C084.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Sudoku_0_9C0C6D67-DBDB-49E9-BC4A-64DE88B126E1.png",
+        "timestamp" : 1795005913.198
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "BD489B92-F822-485A-A23A-4732A7CAB0FA",
+        "deviceName" : "t21-SE3",
+        "exportedFileName" : "4FFCF85E-ECB7-4865-A6AE-0D856E0B5D8E.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Klondike_0_4DBC6EE3-0168-49F8-A1C3-DE25AD03CD64.png",
+        "timestamp" : 1795005903.649
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "BD489B92-F822-485A-A23A-4732A7CAB0FA",
+        "deviceName" : "t21-SE3",
+        "exportedFileName" : "61658B7B-1B85-459B-A3CE-7709D5975D23.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Block Grid_0_1FC3A474-5675-4A96-A9BE-0B91E46935B1.png",
+        "timestamp" : 1795005900.514
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "BD489B92-F822-485A-A23A-4732A7CAB0FA",
+        "deviceName" : "t21-SE3",
+        "exportedFileName" : "6223D889-464C-4EE4-A9A5-F0FFE6EB250F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Game Box_0_92178E2C-C5CC-41A4-9BB3-93B140717646.png",
+        "timestamp" : 1795005897.913
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testLayoutAtPreferredTextSize()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testLayoutAtPreferredTextSize"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "5698E206-0F3B-4CF4-B28F-40A5FC1C1755.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Word Scramble_0_CE9B20BF-1A51-4DEA-85C3-466C0AAA944E.png",
+        "timestamp" : 1795006968.737
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testAllSixGamesAcceptPlayActions()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testAllSixGamesAcceptPlayActions"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "D223FD84-FBA3-4BAD-97F4-CE3D4FF41E3D.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Sudoku_0_1F5D8EA3-0909-4944-AD03-A2219D2D40A8.png",
+        "timestamp" : 1795007010.294
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "B7E9398E-1EB9-4835-944C-0AA08B4B8B91.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Klondike_0_21171382-97C7-404D-8CB3-EC7D6AB26D45.png",
+        "timestamp" : 1795007006.297
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "01D7E252-5E14-4249-9C29-C6E7EE5062D5.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Block Grid_0_90A6E65A-12B6-4DB3-BBB0-DECF01393313.png",
+        "timestamp" : 1795007002.943
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "021D7C3C-3AA2-4F74-951E-FD2423469E60.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Compact Game Box_0_47A787CD-BEA5-4BE8-9B54-9F3AB331D092.png",
+        "timestamp" : 1795007000.273
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testLayoutAtPreferredTextSize()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testLayoutAtPreferredTextSize"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "8B421E6E-8420-4158-BCCB-052179619FBE.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Sudoku Hard_0_FB586487-720B-4CE9-81A1-0CA3835CCB3D.png",
+        "timestamp" : 1795007036.795
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "5E631AF0-7B3D-4257-8D03-B6E1ED822827.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Minesweeper Intermediate_0_3B5A824B-32F4-4251-8F83-0981F8171E2D.png",
+        "timestamp" : 1795007027.653
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testPauseFreezesClockAndNewGameChangesDifficulty()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testPauseFreezesClockAndNewGameChangesDifficulty"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "392F2B6E-6A29-474A-BB2A-5E692F04240F.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Game Box Dark_0_11065DC9-CDAF-4457-9032-928844A6B183.png",
+        "timestamp" : 1795007051.889
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "66CEF893-E260-4322-9C13-819946DC4821.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Settings Dark_0_D173B5F0-94D2-4EC7-B490-FF4CFFAB059F.png",
+        "timestamp" : 1795007050.583
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testSettingsAndEmptyStatisticsInDarkTheme()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testSettingsAndEmptyStatisticsInDarkTheme"
+  },
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "702E01D4-3CFC-4662-881C-441717294141",
+        "deviceName" : "iPhone 17",
+        "exportedFileName" : "5F2ED037-D704-463D-B4BC-EC7F4680D2DB.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Word Scramble Result_0_6E71F1E1-5389-4469-8D75-A97852B36F85.png",
+        "timestamp" : 1795007063.68
+      }
+    ],
+    "testIdentifier" : "OffPlayUITests/testWordResultPersistsAndNewGameDoesNotAskToAbandon()",
+    "testIdentifierURL" : "test://com.apple.xcode/OffPlay/OffPlayUITests/OffPlayUITests/testWordResultPersistsAndNewGameDoesNotAskToAbandon"
+  }
+]

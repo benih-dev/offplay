@@ -1,85 +1,26 @@
-# Arsitektur OffPlay v1.0
+# Kontrak inti OffPlay v1.0
 
-> Implementasi inti app dan perintah build/test yang sudah dijalankan berada pada [Implementasi inti OffPlay](implementation.md). Dokumen di bawah menyimpan draf awal untuk konteks keputusan produk.
+Pemain iPhone dapat memilih salah satu dari enam Judul di Game Box dan langsung bermain, tanpa login, jaringan, atau unduhan konten tambahan. Target minimum iOS 17. V1.0 tanpa iklan, SDK iklan, Remove Ads, atau monetisasi lain. Kontrak ini menilai inti di simulator, bukan kesiapan rilis.
 
-> Status: draf lama, belum siap untuk implementasi. Peta aktif: [Kesiapan desain OffPlay v1.0](../.scratch/offplay-v1-design/map.md). Pernyataan di bawah tentang data boleh hilang dan tanpa sync tidak berlaku. Statistik Pemain dan Sesi yang belum selesai harus dapat dipulihkan setelah pemasangan ulang; syarat pemulihan masih akan diputuskan. Aturan Sesi, iklan, dan pilihan API lain masih usulan kecuali dikonfirmasi dalam peta.
+## Sesi dan Statistik Pemain
 
-Desain teknis untuk peluncuran awal: 6 Judul, SwiftUI, AdMob, StoreKit 2.
-Lihat `GLOSSARY.md` untuk definisi istilah dan `docs/adr/` untuk keputusan.
+Membuka Judul melanjutkan papan atau hasil terakhir, tanpa dialog pembuka. Hitungan Sesi dimulai pada tindakan bermain pertama yang sah. Waktu aktif berhenti selama jeda, ketika pemain meninggalkan papan, atau ketika app tidak aktif. Kembali ke Game Box tidak berarti Kalah.
 
-## Struktur modul
+Setelah proses app ditutup, papan, riwayat Undo yang berlaku, Statistik Pemain dan urutan tantangan harus dapat dilanjutkan dari simpanan lokal. Mulai Baru pada Sesi yang sudah dimainkan tetapi belum selesai memerlukan konfirmasi; membatalkannya tidak mengubah progres. Jika diteruskan, hasilnya Ditinggalkan. Hasil akhir dicatat tepat sekali, tetap terlihat saat Judul dibuka lagi, dan tidak dapat dibatalkan dengan Undo.
 
-```
-OffPlay/
-├── OffPlayApp                # shell: navigasi, tema, ATT prompt
-├── Core/
-│   ├── GameModule            # protokol yang dipenuhi tiap Judul
-│   ├── StatsStore            # persistensi Statistik Pemain + Lanjutkan Sesi
-│   ├── AdsCoordinator        # AdMob wrapper, Kadens Iklan, fail-silent
-│   └── Entitlements          # StoreKit 2, status Remove Ads + restore
-└── Titles/
-    ├── BlockGrid/
-    ├── KlondikeSolitaire/
-    ├── Sudoku/
-    ├── Game2048/
-    ├── Minesweeper/
-    └── WordScramble/
-```
-
-## Protokol `GameModule`
-
-```swift
-protocol GameModule {
-    var name: String { get }
-    var icon: Image { get }
-    func makeGameView() -> AnyView
-    func makeStatsView() -> AnyView          // dipakai di UI Game Box, bukan halaman detail
-}
-```
-
-Alur tampilan: Game Box menampilkan daftar Judul sebagai grid ikon; tap ikon langsung membuka `makeGameView()`. Tidak ada halaman detail per Judul. `makeStatsView()` disajikan sebagai overlay/section kecil, bukan halaman tersendiri.
-
-## Kadens Iklan
-
-Aturan interstitial, semua deterministik dan diuji unit:
-
-1. Interstitial hanya muncul pada akhir Sesi (Game Over / menang / keluar ke Game Box).
-2. Maksimal 1 interstitial per 90 detik, dihitung sejak tayangan terakhir.
-3. Tidak pernah muncul pada 2 Sesi pertama pengguna baru.
-4. Saat offline atau iklan gagal muat: dilewati diam-diam, tidak ada retry loop, tidak ada UI error.
-5. Tidak ada iklan banner dalam v1.0.
-
-## Persistensi
-
-- `StatsStore` (protokol) dengan implementasi JSON file via `UserDefaults`. Satu file per Judul. Tanpa sync.
-- `Lanjutkan Sesi`: tiap Judul menyimpan state Sesi yang belum berakhir sendiri, juga via `StatsStore`. Saat Judul dibuka, jika ada Sesi tersimpan, tawarkan "Lanjutkan" atau "Mulai Baru".
-- Penghapusan aplikasi menghapus semua data. Ini disengaja (ADR-0004).
-
-## Momen iklan per Judul
-
-| Judul | Akhir Sesi alami |
+| Judul | Perilaku pembeda untuk diperiksa |
 |---|---|
-| Block Grid | Layar Game Over |
-| Klondike Solitaire | Menang atau quit di tengah permainan |
-| Sudoku | Puzzle selesai atau quit |
-| 2048 | Game Over |
-| Minesweeper | Menang, kalah, atau quit |
-| Word Scramble | Ronde selesai |
+| Block Grid | Baki tiga keping terisi kembali setelah habis. Baris dan kolom penuh dibersihkan bersamaan; tanpa Undo. |
+| Klondike Solitaire | Ambil satu kartu; putar ulang stock tanpa mengocok. Undo maksimal 100 tindakan. Buntu bukan Kalah. |
+| Sudoku | Bank offline tiga tingkat, solusi tunggal, catatan manual dan Undo maksimal 100 perubahan. Penanda duplikat bukan petunjuk jawaban. |
+| 2048 | Satu Undo mengembalikan undian yang sama. Mencapai 2048 bukan akhir Sesi; pencapaian bertahan setelah Undo. |
+| Minesweeper | Dua kesulitan; pembukaan pertama beserta tetangga aman. Buka-serentak dengan bendera salah bisa Kalah. Win rate tidak memasukkan Ditinggalkan. |
+| Word Scramble | Kata bahasa Indonesia dari kelompok anagram offline. Jawaban sah dengan susunan huruf yang sama diterima; kelompok diundi tanpa pengulangan sampai habis. |
 
-## Platform & API
+Rincian aturan, bantuan, skor dan rekor tetap mengikuti **Menetapkan batas aturan dan Statistik Pemain per Judul**; tabel ini bukan daftar lengkap kasus uji.
 
-- SwiftUI untuk semua UI dan board/grid sederhana; SpriteKit hanya jika sebuah Judul butuh partikel/fisika ringan (keputusan per modul).
-- Minimum iOS 17 (SwiftData tidak dipakai, tapi iOS 17 memperkecil rentang pengujian dan API StoreKit 2 terbaru stabil).
-- Apple Core Haptics: feedback light/medium pada momen pasang balok, taruh kartu, gabung angka.
-- Dark Mode dan Safe Area wajib di semua layar; tidak ada UI yang tertutup Dynamic Island atau gestur bawah.
-- Target ukuran binary di bawah 60 MB.
+## Batas arsitektur
 
-## Urutan pengerjaan
+SwiftUI dan `AppStore` menangani navigasi, modal, serta status aktif app. `OffPlayCore` menjalankan aturan tanpa UI. `GameLibrary` menghubungkan tindakan sah dengan Sesi dan statistik; `LibraryFileStore` menyimpan satu arsip lokal untuk seluruh Judul. [Implementasi inti OffPlay](implementation.md) mencatat struktur baseline dan cara mengujinya.
 
-1. Shell + `GameModule` + `StatsStore` + `AdsCoordinator` + `Entitlements` (tulang punggung, dengan 1 Judul main-main untuk integrasi)
-2. Block Grid
-3. Klondike Solitaire
-4. 2048
-5. Sudoku, Minesweeper, Word Scramble
-
-Setiap langkah berakhir dengan build + pengujian E2E sebelum lanjut.
+ADR awal adalah konteks historis. Protokol `GameModule` bukan kontrak antar-Judul yang wajib. ADR iklan dan StoreKit tidak berlaku untuk v1.0. Simpan lokal antarproses tidak menjamin pemulihan setelah pemasangan ulang, tetapi juga tidak membatalkan target pemulihan pada peta desain. iCloud, ukuran unduhan rilis dan App Review tidak dinilai pada peta inti.
