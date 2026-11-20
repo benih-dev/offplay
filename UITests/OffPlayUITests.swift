@@ -3,6 +3,22 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func testFeedbackDoesNotMoveBoard() {
+        let app = launch()
+        open("blockGrid", in: app)
+        app.buttons["block.piece.0"].tap()
+        let board = app.descendants(matching: .any)["session.board"].firstMatch
+        XCTAssertTrue(board.exists)
+        let frame = board.frame.integral
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+        app.buttons["block.cell.63"].tap()
+        XCTAssertTrue(app.staticTexts["session.feedback"].waitForExistence(timeout: 5))
+        XCTAssertEqual(board.frame.integral, frame)
+        app.buttons["block.cell.0"].tap()
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+        XCTAssertEqual(board.frame.integral, frame)
+    }
+
     @MainActor func test2048RestartKeepsHighScore() throws {
         let app = launch()
         open("game2048", in: app)
