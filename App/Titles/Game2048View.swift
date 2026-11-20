@@ -1,9 +1,13 @@
 import SwiftUI
+import UIKit
 import OffPlayCore
 
 struct Game2048View: View {
     @Environment(AppStore.self) private var store
     @FocusState private var keyboardFocus: Bool
+    private static let emptyCell = Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark ? UIColor.black.withAlphaComponent(0.24) : UIColor.white.withAlphaComponent(0.12)
+    })
 
     var body: some View {
         if let session = store.library.session(.game2048), case let .game2048(game) = session.state {
@@ -15,7 +19,7 @@ struct Game2048View: View {
                                 .font(.system(.title2, design: .rounded).bold()).minimumScaleFactor(0.4).lineLimit(1)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .aspectRatio(1, contentMode: .fit)
-                                .background(GameMenuTheme.paper.opacity(tile == 0 ? 0.12 : 1))
+                                .background(tile == 0 ? Self.emptyCell : GameMenuTheme.paper)
                                 .foregroundStyle(GameMenuTheme.ink)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay {
