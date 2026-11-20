@@ -23,10 +23,11 @@ struct GamePlayView: View {
                             if case let .klondike(game) = session.state { MetricView(label: "Moves", value: String(game.moves)).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("session.moves") }
                         }
                         ZStack(alignment: .topLeading) {
-                            Text("That move isn’t allowed.").hidden()
-                            Text("Not quite. Rearrange the letters and try again.").hidden()
+                            ForEach(GameFeedback.allCases, id: \.self) { feedback in
+                                Text(feedback.localizedMessage).hidden()
+                            }
                             if let feedback = store.feedback {
-                                Text(feedback)
+                                Text(feedback.localizedMessage)
                                     .foregroundStyle(GameTheme.danger)
                                     .accessibilityIdentifier("session.feedback")
                             }
@@ -63,7 +64,7 @@ struct GamePlayView: View {
             }
             .background(GameTheme.canvas)
             .onChange(of: store.feedback) { _, message in
-                if let message { AccessibilityNotification.Announcement(message).post() }
+                if let message { AccessibilityNotification.Announcement(message.localizedMessage).post() }
             }
             .navigationTitle(id.name).navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
