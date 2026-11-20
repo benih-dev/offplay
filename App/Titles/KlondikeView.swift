@@ -33,7 +33,8 @@ struct KlondikeView: View {
                     Spacer(minLength: 0)
                     ForEach(CardSuit.allCases, id: \.rawValue) { suit in
                         Button {
-                            if let source = selected { move(source, to: .foundation(suit)) }
+                            if selected == .foundation(suit) { selected = nil }
+                            else if let source = selected { move(source, to: .foundation(suit)) }
                             else if !game.foundations[suit.rawValue].isEmpty { selected = .foundation(suit) }
                         } label: {
                             CardFace(card: game.foundations[suit.rawValue].last, placeholder: suit.symbol, selected: selected == .foundation(suit), width: cardWidth, height: cardHeight)
