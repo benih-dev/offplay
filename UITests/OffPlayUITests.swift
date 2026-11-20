@@ -26,6 +26,18 @@ final class OffPlayUITests: XCTestCase {
                 XCTAssertTrue(app.staticTexts["sudoku.duplicates"].exists)
                 Thread.sleep(forTimeInterval: 2)
                 attach(app, name: "Sudoku-\(language)-\(theme)")
+                app.buttons["sudoku.cell.\(cells[1])"].tap()
+                app.buttons["sudoku.erase"].tap()
+                app.buttons["sudoku.notes"].tap()
+                for corner in [1, 3, 7, 9] {
+                    app.buttons["sudoku.digit.\(corner)"].tap()
+                }
+                XCTAssertTrue(app.buttons["sudoku.cell.\(cells[1])"].isSelected)
+                Thread.sleep(forTimeInterval: 2)
+                let cornerNotes = XCTAttachment(screenshot: app.buttons["sudoku.cell.\(cells[1])"].screenshot())
+                cornerNotes.name = "CornerNotes-\(language)-\(theme)"
+                cornerNotes.lifetime = .keepAlways
+                add(cornerNotes)
                 app.terminate()
             }
         }

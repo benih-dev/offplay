@@ -113,9 +113,10 @@ private struct SudokuCellView: View {
             } else if !notes.isEmpty {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 3), spacing: 0) {
                     ForEach(1...9, id: \.self) { digit in
-                        Text(notes.contains(digit) ? String(digit) : " ").font(.caption2).lineLimit(1).minimumScaleFactor(0.5).frame(height: size / 3)
+                        Text(notes.contains(digit) ? String(digit) : " ").font(.caption2).lineLimit(1).minimumScaleFactor(0.5).frame(height: (size - 12) / 3)
                     }
                 }
+                .padding(6)
             }
         }
         .frame(width: size, height: size).foregroundStyle(duplicate ? GameTheme.danger : (given ? GameTheme.ink : familyInk))
