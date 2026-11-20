@@ -3,6 +3,37 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor private func endBlockGrid(in app: XCUIApplication) throws {
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.blockGrid, content: try GameContent.bundled())
+        guard case var .blockGrid(game)? = library.session(.blockGrid)?.state else {
+            return XCTFail("Expected Block Grid session")
+        }
+        open("blockGrid", in: app)
+        XCTAssertFalse(app.staticTexts["session.result"].exists)
+        var moves = 0
+        while !game.isGameOver && moves < 100 {
+            let move = try XCTUnwrap((0..<3).flatMap { slot in
+                (0..<64).map { (slot: slot, cell: $0) }
+            }.first { game.canPlace(slot: $0.slot, row: $0.cell / 8, column: $0.cell % 8) })
+            app.buttons["block.piece.\(move.slot)"].tap()
+            app.buttons["block.cell.\(move.cell)"].tap()
+            XCTAssertTrue(game.place(slot: move.slot, row: move.cell / 8, column: move.cell % 8))
+            moves += 1
+        }
+        XCTAssertTrue(game.isGameOver)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor func testBlockGridEndedStatus() throws {
+        let app = launch()
+        XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Ready to play")
+        try endBlockGrid(in: app)
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Session ended")
+        app.buttons["session.back"].tap()
+        XCTAssertEqual(app.buttons["catalog.blockGrid"].label, "Block Grid, Session ended")
+    }
+
     @MainActor func testIndonesianStatisticsLabels() throws {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-reset-data", "-theme", "light", "-AppleLanguages", "(id)", "-AppleLocale", "id_ID"]

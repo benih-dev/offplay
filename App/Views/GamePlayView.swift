@@ -12,7 +12,7 @@ struct GamePlayView: View {
                 VStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 10) {
                         if let result = session.outcome {
-                            Text(id == .game2048 ? String(localized: "Session ended") : result.localizedName)
+                            Text(id.localizedOutcome(result))
                                 .font(.system(.title, design: .rounded).bold())
                                 .foregroundStyle(result == .won ? GameTheme.accent : GameTheme.ink)
                                 .accessibilityIdentifier("session.result")
