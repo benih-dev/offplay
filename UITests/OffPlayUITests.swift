@@ -230,6 +230,32 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Game Box Dark")
     }
 
+    @MainActor func testStatisticsOnlyShowRowsAfterPlaying() {
+        let app = launch()
+        let empty = app.staticTexts["stats.empty.blockGrid"]
+        let started = app.staticTexts["stats.blockGrid.started"]
+        let highScore = app.staticTexts["stats.blockGrid.highScore"]
+
+        app.buttons["catalog.statistics"].tap()
+        XCTAssertTrue(empty.waitForExistence(timeout: 5))
+        XCTAssertFalse(started.exists)
+        XCTAssertFalse(highScore.exists)
+        app.buttons["stats.done"].tap()
+
+        open("blockGrid", in: app)
+        app.buttons["block.piece.0"].tap()
+        app.buttons["block.cell.0"].tap()
+        app.buttons["session.back"].tap()
+
+        app.buttons["catalog.statistics"].tap()
+        XCTAssertTrue(started.waitForExistence(timeout: 5))
+        XCTAssertEqual(started.label, "1")
+        XCTAssertTrue(highScore.exists)
+        XCTAssertFalse(empty.exists)
+        XCTAssertTrue(app.staticTexts["stats.empty.klondike"].exists)
+        XCTAssertFalse(app.staticTexts["stats.klondike.started"].exists)
+    }
+
     @MainActor func testWordResultPersistsAndNewGameDoesNotAskToAbandon() throws {
         let app = launch()
         open("wordScramble", in: app)
