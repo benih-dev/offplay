@@ -261,6 +261,43 @@ final class OffPlayUITests: XCTestCase {
     @MainActor func testWordResultPersistsAndNewGameDoesNotAskToAbandon() throws {
         let app = launch()
         open("wordScramble", in: app)
+        try solveWord(in: app)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
+        attach(app, name: "Word Scramble Result")
+        app.buttons["session.back"].tap()
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "-reset-data" }
+        app.launch()
+        XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
+        open("wordScramble", in: app)
+        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
+        app.buttons["session.new"].tap()
+        XCTAssertFalse(app.buttons["new.confirm"].exists)
+        XCTAssertFalse(app.staticTexts["session.result"].exists)
+    }
+
+    @MainActor func testWordScrambleWinShowsCleanSolvedState() throws {
+        let app = launch()
+        open("wordScramble", in: app)
+        let answer = try solveWord(in: app)
+        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["word.submit"].exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.letter.'")).firstMatch.exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.answer.'")).firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["word.hint"].exists)
+        let solved = app.descendants(matching: .any)["word.solved"]
+        XCTAssertTrue(solved.exists)
+        XCTAssertEqual(solved.value as? String, answer)
+        XCTAssertTrue(app.staticTexts["word.guesses"].exists)
+        attach(app, name: "Word Scramble Solved")
+        app.buttons["session.new"].tap()
+        XCTAssertTrue(app.buttons["word.letter.0"].waitForExistence(timeout: 5))
+        XCTAssertFalse(solved.exists)
+        XCTAssertTrue(app.buttons["word.submit"].exists)
+    }
+
+    @discardableResult @MainActor private func solveWord(in app: XCUIApplication) throws -> String {
         let content = try GameContent.bundled()
         var available: [(index: Int, letter: String)] = []
         for index in 0..<8 {
@@ -281,19 +318,7 @@ final class OffPlayUITests: XCTestCase {
         if !submit.isHittable { app.swipeUp() }
         XCTAssertTrue(submit.isEnabled)
         submit.tap()
-        XCTAssertTrue(app.staticTexts["session.result"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
-        attach(app, name: "Word Scramble Result")
-        app.buttons["session.back"].tap()
-        app.terminate()
-        app.launchArguments.removeAll { $0 == "-reset-data" }
-        app.launch()
-        XCTAssertTrue(app.buttons["catalog.blockGrid"].waitForExistence(timeout: 10))
-        open("wordScramble", in: app)
-        XCTAssertEqual(app.staticTexts["session.result"].label, "Won")
-        app.buttons["session.new"].tap()
-        XCTAssertFalse(app.buttons["new.confirm"].exists)
-        XCTAssertFalse(app.staticTexts["session.result"].exists)
+        return answer
     }
 
     @MainActor func testSudokuNewGameShowsAllControlsWithoutScrolling() {

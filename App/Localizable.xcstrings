@@ -491,6 +491,16 @@
         }
       }
     },
+    "Guesses: %lld": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tebakan: %lld"
+          }
+        }
+      }
+    },
     "Guesses: %lld · Tap an answer letter to edit it.": {
       "localizations": {
         "id": {
@@ -1027,6 +1037,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Geser atas"
+          }
+        }
+      }
+    },
+    "Solved Word": {
+      "localizations": {
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kata Terjawab"
           }
         }
       }
