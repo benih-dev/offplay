@@ -9,17 +9,22 @@ enum GameMenuTheme {
     static let brand = adaptive(0x168458, 0x70d99b)
     static let ink = color(0x173c43)
     static let paper = color(0xffffff)
-    static let green = color(0x70d99b)
-    static let greenFill = color(0xc8f2d3)
+    static let utilitySurface = adaptive(0xffffff, 0x284653)
+    static let utilityOutline = adaptive(0x173c43, 0x82adbc)
+    static let depth = adaptive(0x173c43, 0x091a21)
+    static let brandRim = adaptive(0xffffff, 0x2f675b)
+    static let brandDepth = adaptive(0x0d5b3d, 0x091a21)
+    static let green = adaptive(0x70d99b, 0x76be91)
+    static let greenFill = adaptive(0xc8f2d3, 0xa2cfb1)
     static let greenDeep = color(0x0d5b3d)
     static let greenTile = color(0x168458)
-    static let yellow = color(0xffda65)
-    static let yellowFill = color(0xfff0b4)
-    static let coral = color(0xff9486)
-    static let coralFill = color(0xffddd4)
+    static let yellow = adaptive(0xffda65, 0xe5c360)
+    static let yellowFill = adaptive(0xfff0b4, 0xddcb8c)
+    static let coral = adaptive(0xff9486, 0xe88d84)
+    static let coralFill = adaptive(0xffddd4, 0xedb9ad)
     static let redInk = color(0xa32e38)
-    static let blue = color(0x79c8ee)
-    static let blueFill = color(0xb9e5fb)
+    static let blue = adaptive(0x79c8ee, 0x74b4d7)
+    static let blueFill = adaptive(0xb9e5fb, 0x9ecde4)
     static let blueInk = color(0x164f76)
 
     static let unit: CGFloat = 4
@@ -73,23 +78,38 @@ enum GameMenuTheme {
 }
 
 struct GameMenuButtonStyle: ButtonStyle {
-    var fill: Color = GameMenuTheme.paper
-    var radius: CGFloat = GameMenuTheme.smallRadius
+    enum Role {
+        case utility, shuffle, game(GameID)
+    }
+
+    var role: Role = .utility
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.isEnabled) private var isEnabled
 
+    private var palette: (fill: Color, foreground: Color, outline: Color) {
+        switch role {
+        case .utility: (GameMenuTheme.utilitySurface, GameMenuTheme.text, GameMenuTheme.utilityOutline)
+        case .shuffle: (GameMenuTheme.yellow, GameMenuTheme.ink, GameMenuTheme.ink)
+        case .game(let id): (GameMenuTheme.face(id), GameMenuTheme.ink, GameMenuTheme.ink)
+        }
+    }
+
     func makeBody(configuration: Configuration) -> some View {
+        let radius = if case .game = role { GameMenuTheme.radius } else { GameMenuTheme.smallRadius }
         let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
         let pressed = configuration.isPressed
+        let palette = self.palette
         configuration.label
-            .foregroundStyle(GameMenuTheme.ink)
-            .background(fill, in: shape)
-            .overlay(shape.strokeBorder(GameMenuTheme.ink, lineWidth: GameMenuTheme.edge))
-            .shadow(
-                color: GameMenuTheme.ink,
-                radius: 0,
-                y: pressed && !reduceMotion ? GameMenuTheme.edge : GameMenuTheme.lift
-            )
+            .foregroundStyle(palette.foreground)
+            .background {
+                shape.fill(palette.fill)
+                    .shadow(
+                        color: GameMenuTheme.depth,
+                        radius: 0,
+                        y: pressed && !reduceMotion ? GameMenuTheme.edge : GameMenuTheme.lift
+                    )
+                    .overlay(shape.strokeBorder(palette.outline, lineWidth: GameMenuTheme.edge))
+            }
             .offset(y: pressed && !reduceMotion ? GameMenuTheme.unit : 0)
             .opacity(isEnabled ? (pressed && reduceMotion ? 0.8 : 1) : 0.5)
             .animation(

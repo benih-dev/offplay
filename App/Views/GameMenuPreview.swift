@@ -77,19 +77,19 @@ struct GameMenuPreview: View {
     }
 
     private func playingCard(rank: String, suit: String, red: Bool) -> some View {
-        VStack(alignment: .leading, spacing: GameMenuTheme.inset) {
+        let shape = RoundedRectangle(cornerRadius: GameMenuTheme.unit)
+        return VStack(alignment: .leading, spacing: GameMenuTheme.inset) {
             Text(rank).font(.system(size: 20, weight: .bold, design: .serif))
             Image(systemName: suit).font(.system(size: 20))
         }
         .foregroundStyle(red ? GameMenuTheme.redInk : GameMenuTheme.ink)
         .frame(maxWidth: .infinity)
         .padding(.vertical, GameMenuTheme.inset)
-        .background(GameMenuTheme.paper, in: RoundedRectangle(cornerRadius: GameMenuTheme.unit))
-        .overlay {
-            RoundedRectangle(cornerRadius: GameMenuTheme.unit)
-                .strokeBorder(GameMenuTheme.ink, lineWidth: GameMenuTheme.edge)
+        .background {
+            shape.fill(GameMenuTheme.paper)
+                .shadow(color: GameMenuTheme.redInk, radius: 0, y: GameMenuTheme.unit)
+                .overlay(shape.strokeBorder(GameMenuTheme.ink, lineWidth: GameMenuTheme.edge))
         }
-        .shadow(color: GameMenuTheme.redInk, radius: 0, y: GameMenuTheme.unit)
     }
 
     private var sudoku: some View {
@@ -118,7 +118,9 @@ struct GameMenuPreview: View {
             }
         }
         .border(GameMenuTheme.blueInk, width: GameMenuTheme.edge)
-        .shadow(color: GameMenuTheme.blueInk, radius: 0, y: GameMenuTheme.unit)
+        .background {
+            Rectangle().fill(GameMenuTheme.blueInk).offset(y: GameMenuTheme.unit)
+        }
     }
 
     private var numberTiles: some View {
@@ -166,17 +168,17 @@ struct GameMenuPreview: View {
     private func letterRow(_ word: String, fill: Color) -> some View {
         HStack(spacing: GameMenuTheme.unit) {
             ForEach(Array(word.enumerated()), id: \.offset) { _, letter in
+                let shape = RoundedRectangle(cornerRadius: GameMenuTheme.unit)
                 Text(String(letter))
                     .font(.system(size: 16, weight: .black, design: .rounded))
                     .foregroundStyle(GameMenuTheme.ink)
                     .frame(maxWidth: .infinity)
                     .aspectRatio(1, contentMode: .fit)
-                    .background(fill, in: RoundedRectangle(cornerRadius: GameMenuTheme.unit))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: GameMenuTheme.unit)
-                            .strokeBorder(GameMenuTheme.ink, lineWidth: 1)
+                    .background {
+                        shape.fill(fill)
+                            .shadow(color: GameMenuTheme.ink, radius: 0, y: GameMenuTheme.unit)
+                            .overlay(shape.strokeBorder(GameMenuTheme.ink, lineWidth: 1))
                     }
-                    .shadow(color: GameMenuTheme.ink, radius: 0, y: GameMenuTheme.unit)
             }
         }
     }
