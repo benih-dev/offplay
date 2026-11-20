@@ -80,7 +80,7 @@ struct GameBoxView: View {
 
     private func status(_ id: GameID) -> String {
         guard let session = store.library.session(id) else { return String(localized: "Ready to play") }
-        if let result = session.outcome { return id == .game2048 ? String(localized: "Session ended") : result.localizedName }
+        if let result = session.outcome { return id.localizedOutcome(result) }
         return session.hasStarted ? String(localized: "Resume Game · \(GameTheme.time(session.elapsed))") : String(localized: "Ready to play")
     }
 }
