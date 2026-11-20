@@ -637,6 +637,47 @@ final class OffPlayUITests: XCTestCase {
         }
     }
 
+    @MainActor func testSudokuSelectionAndNotesPersistThroughConflictsAndFeedback() throws {
+        let app = launch()
+        open("sudoku", in: app)
+        var library = GameLibrary(seed: 42)
+        library.ensureSession(.sudoku, content: try GameContent.bundled())
+        guard case let .sudoku(game)? = library.session(.sudoku)?.state,
+              let index = game.puzzle.givens.firstIndex(of: 0),
+              let conflict = (0..<9).map({ game.puzzle.givens[index / 9 * 9 + $0] }).first(where: { $0 > 0 }) else {
+            return XCTFail("Expected an empty cell and a given in its row")
+        }
+        let cell = app.buttons["sudoku.cell.\(index)"]
+        let notes = app.buttons["sudoku.notes"]
+        cell.tap()
+        for _ in 0..<5 where !notes.isHittable { app.swipeUp() }
+        notes.tap()
+        app.buttons["sudoku.digit.2"].tap()
+        app.buttons["sudoku.digit.3"].tap()
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertEqual(cell.value as? String, "empty")
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+        notes.tap()
+        app.buttons["sudoku.digit.\(conflict)"].tap()
+        XCTAssertEqual(cell.value as? String, String(conflict))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Cells with duplicate numbers:'")).firstMatch.exists)
+        XCTAssertEqual(notes.label, "Notes")
+        XCTAssertTrue(app.buttons["sudoku.digit.1"].isEnabled)
+        for _ in 0..<5 where !notes.isHittable { app.swipeUp() }
+        notes.tap()
+        app.buttons["sudoku.digit.5"].tap()
+        XCTAssertTrue(app.staticTexts["session.feedback"].exists)
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertEqual(cell.value as? String, String(conflict))
+        XCTAssertTrue(app.buttons["sudoku.digit.1"].isEnabled)
+        attach(app, name: "Sudoku Notes and Selection Persist With Feedback")
+        app.buttons["sudoku.erase"].tap()
+        app.buttons["sudoku.digit.6"].tap()
+        XCTAssertEqual(cell.value as? String, "empty")
+        XCTAssertEqual(notes.label, "Notes: On")
+        XCTAssertFalse(app.staticTexts["session.feedback"].exists)
+    }
+
     @MainActor func testSudokuFullDigitPadIsReachable() {
         let app = launch()
         open("sudoku", in: app)

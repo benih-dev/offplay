@@ -13,6 +13,11 @@ struct SudokuView: View {
             ? [Array(1...9)] : [Array(1...5), Array(6...9)]
     }
 
+    private var keyWidth: CGFloat {
+        let columns = CGFloat(digitRows[0].count)
+        return max(0, (availableWidth - (columns - 1) * 4) / columns)
+    }
+
     var body: some View {
         if case let .sudoku(game)? = store.library.session(.sudoku)?.state {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
@@ -35,10 +40,10 @@ struct SudokuView: View {
                             ForEach(row, id: \.self) { digit in
                                 Button(String(digit)) { enter(digit) }
                                     .buttonStyle(ActionButtonStyle(minimumHeight: 44, horizontalPadding: 0))
+                                    .frame(width: keyWidth)
                                     .disabled(selected == nil).accessibilityIdentifier("sudoku.digit.\(digit)")
                             }
                         }
-                        .frame(width: max(0, (availableWidth - CGFloat(digitRows[0].count - 1) * 4) / CGFloat(digitRows[0].count)) * CGFloat(row.count) + CGFloat(row.count - 1) * 4)
                     }
                 }
                 HStack(spacing: 8) {

@@ -23,7 +23,6 @@ enum GameMenuTheme {
     static let coral = adaptive(0xff9486, 0xe88d84)
     static let coralFill = adaptive(0xffddd4, 0xedb9ad)
     static let redInk = color(0xa32e38)
-    static let feedbackInk = color(0x46373f)
     static let blue = adaptive(0x79c8ee, 0x74b4d7)
     static let blueFill = adaptive(0xb9e5fb, 0x9ecde4)
     static let blueInk = color(0x164f76)
