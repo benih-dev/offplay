@@ -20,15 +20,28 @@ struct SudokuView: View {
                         }
                     }.frame(width: size * 9)
                 }
-                if !duplicates.isEmpty {
-                    Text("Cells with duplicate numbers: \(duplicates.count).").font(.footnote).foregroundStyle(GameTheme.danger)
+                ZStack {
+                    ForEach(0...game.values.count, id: \.self) { count in
+                        Text("Cells with duplicate numbers: \(count).")
+                            .hidden()
+                            .accessibilityHidden(true)
+                    }
+                    if !duplicates.isEmpty {
+                        Text("Cells with duplicate numbers: \(duplicates.count).")
+                            .foregroundStyle(GameTheme.danger)
+                            .accessibilityIdentifier("sudoku.duplicates")
+                    }
                 }
+                .font(.footnote)
+                .fixedSize(horizontal: false, vertical: true)
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 6)], spacing: 6) {
                     ForEach(1...9, id: \.self) { digit in
                         Button(String(digit)) { enter(digit) }.buttonStyle(ActionButtonStyle())
                             .disabled(selected == nil).accessibilityIdentifier("sudoku.digit.\(digit)")
                     }
                 }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("sudoku.keypad")
                 HStack(spacing: 8) {
                     Button(noteMode ? LocalizedStringKey("Notes: On") : "Notes") { noteMode.toggle() }
                         .buttonStyle(ActionButtonStyle(primary: noteMode)).accessibilityIdentifier("sudoku.notes")
