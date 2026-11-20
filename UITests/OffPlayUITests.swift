@@ -3,6 +3,31 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func test2048ThemeEvidence() {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("game2048", in: app)
+                let footer = app.otherElements["session.footer"].frame
+                let arrows = ["left", "up", "down", "right"].map { app.buttons["slide.\($0)"] }
+                for arrow in arrows {
+                    XCTAssertTrue(arrow.isHittable)
+                    XCTAssertGreaterThanOrEqual(arrow.frame.height, 48)
+                    XCTAssertLessThanOrEqual(arrow.frame.maxY + 6, footer.minY)
+                }
+                XCTAssertLessThanOrEqual(footer.maxY, app.frame.maxY)
+                XCTAssertEqual(arrows[0].frame.minY, arrows[3].frame.minY, accuracy: 1)
+                XCTAssertEqual(arrows[0].frame.width, arrows[3].frame.width, accuracy: 1)
+                for direction in ["left", "up", "right", "down", "left", "up", "left", "down"] {
+                    app.buttons["slide.\(direction)"].tap()
+                }
+                Thread.sleep(forTimeInterval: 2)
+                attach(app, name: "2048-\(language)-\(theme)")
+                app.terminate()
+            }
+        }
+    }
+
     @MainActor func testSudokuDuplicatesDoNotMoveKeypad() throws {
         for language in ["en", "id"] {
             let app = launch(language: language)

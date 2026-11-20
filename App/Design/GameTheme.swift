@@ -109,7 +109,7 @@ struct MetricView: View {
     }
 }
 
-private struct GameplayBoardFrame: ViewModifier {
+struct GameplayBoardFrame: ViewModifier {
     @Environment(\.gameplayGame) private var game
 
     func body(content: Content) -> some View {
