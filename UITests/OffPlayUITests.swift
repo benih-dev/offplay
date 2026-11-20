@@ -21,7 +21,6 @@ final class OffPlayUITests: XCTestCase {
             XCTAssertFalse(app.staticTexts["sudoku.duplicates"].exists)
             app.buttons["sudoku.digit.\(digit)"].tap()
             XCTAssertTrue(app.staticTexts["sudoku.duplicates"].waitForExistence(timeout: 5))
-            print("KEYPAD \(language) no-dup=\(frame) dup=\(keypad.frame)")
             XCTAssertEqual(keypad.frame, frame)
             app.buttons["session.undo"].tap()
             XCTAssertFalse(app.staticTexts["sudoku.duplicates"].exists)
