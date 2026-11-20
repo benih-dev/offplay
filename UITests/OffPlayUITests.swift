@@ -599,6 +599,44 @@ final class OffPlayUITests: XCTestCase {
         attach(app, name: "Fitted Klondike")
     }
 
+    @MainActor func testGameplayControlsDoNotIntersectFooterInitially() {
+        let app = launch()
+        for game in ["blockGrid", "klondike", "sudoku", "game2048", "minesweeper", "wordScramble"] {
+            open(game, in: app)
+            let footer = app.otherElements["session.footer"].frame
+            let controls = app.otherElements["session.board"].descendants(matching: .button)
+            for control in controls.allElementsBoundByIndex {
+                XCTAssertFalse(control.frame.intersects(footer), "\(game): \(control.identifier) intersects footer")
+            }
+            for _ in 0..<5 where !app.buttons["session.back"].isHittable { app.swipeUp() }
+            app.buttons["session.back"].tap()
+        }
+    }
+
+    @MainActor func testSudokuControlsDoNotIntersectFooterInitially() {
+        let app = launch()
+        open("sudoku", in: app)
+        let footer = app.otherElements["session.footer"].frame
+        for id in ["sudoku.notes", "sudoku.erase"] {
+            let button = app.buttons[id]
+            XCTAssertTrue(button.exists)
+            XCTAssertFalse(button.frame.intersects(footer), "\(id) \(button.frame) intersects footer \(footer)")
+        }
+        let digits = (1...9).map { app.buttons["sudoku.digit.\($0)"].frame }
+        for frame in digits {
+            XCTAssertGreaterThanOrEqual(frame.width, 36)
+            XCTAssertGreaterThanOrEqual(frame.height, 44)
+            XCTAssertFalse(frame.intersects(footer))
+        }
+        if app.frame.width - 24 >= 9 * 36 + 8 * 4 {
+            XCTAssertEqual(digits[0].minY, digits[8].minY, accuracy: 1)
+        } else {
+            XCTAssertEqual(digits[0].minY, digits[4].minY, accuracy: 1)
+            XCTAssertEqual(digits[5].minY, digits[8].minY, accuracy: 1)
+            XCTAssertGreaterThan(digits[5].minY, digits[4].minY)
+        }
+    }
+
     @MainActor func testSudokuFullDigitPadIsReachable() {
         let app = launch()
         open("sudoku", in: app)

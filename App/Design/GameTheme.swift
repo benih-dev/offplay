@@ -42,6 +42,8 @@ enum GameTheme {
 struct ActionButtonStyle: ButtonStyle {
     var primary = false
     var destructive = false
+    var minimumHeight: CGFloat = 48
+    var horizontalPadding: CGFloat = 12
     @Environment(\.isEnabled) private var enabled
     @Environment(\.gameplayGame) private var game
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -53,8 +55,8 @@ struct ActionButtonStyle: ButtonStyle {
             let pressed = configuration.isPressed
             configuration.label
                 .font(.system(.headline, design: .rounded))
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, minHeight: minimumHeight)
+                .padding(.horizontal, horizontalPadding)
                 .foregroundStyle(primary ? (destructive ? GameMenuTheme.paper : GameMenuTheme.ink) : GameMenuTheme.text)
                 .background {
                     shape.fill(primary ? (destructive ? GameMenuTheme.redInk : GameMenuTheme.face(game)) : GameMenuTheme.utilitySurface)
@@ -68,8 +70,8 @@ struct ActionButtonStyle: ButtonStyle {
         } else {
             configuration.label
                 .font(.system(.headline, design: .rounded))
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, minHeight: minimumHeight)
+                .padding(.horizontal, horizontalPadding)
                 .background(background(pressed: configuration.isPressed))
                 .foregroundStyle(primary ? GameTheme.canvas : GameTheme.ink)
                 .clipShape(RoundedRectangle(cornerRadius: 12))

@@ -167,7 +167,7 @@ Semua token warna berikut berasal dari `GameMenuTheme`, kecuali permukaan sel ne
 | Elemen | Token terang / gelap | Penggunaan |
 | --- | --- | --- |
 | Kanvas dan footer | `canvas` / `canvas` | Latar biru langit / biru tua `#172D36` |
-| Kartu header | `face(id)`, `ink`, `depth` / token yang sama | Hasil, metrik termasuk label, dan umpan balik; radius 20 pt, garis 2 pt, bayangan keras 6 pt pada bentuk dasar |
+| Kartu header | `face(id)`, `ink`, `depth` / token yang sama | Hasil dan metrik termasuk label; padding vertikal 6 pt, radius 20 pt, garis 2 pt, bayangan keras 6 pt pada bentuk dasar |
 | Bingkai papan | `boardWell(id)` terang / gelap: hijau `#C8F2D3` / `#274A3A`, koral `#FFDDD4` / `#4D3236`, biru `#B9E5FB` / `#22445A`, kuning `#FFF0B4` / `#4A4428`; `boardEdge(id)` terang `#173C43` / gelap: hijau `#76BE91`, koral `#E88D84`, biru `#74B4D7`, kuning `#E5C360` | Isian area luar sel, radius 20 pt dan garis 2 pt; ukuran sel serta ruang papan tetap |
 | Tombol utama | `face(id)`, `ink`, `depth` / token yang sama | Label gelap, garis 2 pt, radius 12 pt; aksi destruktif memakai `redInk` dengan label `paper` |
 | Tombol sekunder | `utilitySurface`, `text`, `utilityOutline`, `depth` / token yang sama | Permukaan putih / biru tua, label dan garis adaptif |
@@ -175,7 +175,9 @@ Semua token warna berikut berasal dari `GameMenuTheme`, kecuali permukaan sel ne
 
 Tombol mempertahankan tinggi minimum 48 pt dan interaksi menu: bayangan 6 pt, saat ditekan turun 4 pt dengan bayangan 2 pt. Reduce Motion meniadakan perpindahan dan animasi, memakai opacity 0,8 saat ditekan. Tombol nonaktif memakai opacity 0,5. Ikon Home dan aksi Pause memakai `text`.
 
-Jaga kontras angka Sudoku dan Minesweeper minimal 4,5:1 pada sel netral. Kesalahan dan umpan balik memakai tinta merah, bukan warna bahaya terang di atas kartu berwarna. Header memakai `feedbackInk` (`#46373F`) dengan kontras minimal 4,5:1 pada semua `face(id)`. Hasil menang tetap memakai `ink` agar terbaca. Seleksi dan keadaan tidak boleh disampaikan lewat warna saja: sertakan garis, simbol, atau label.
+Jaga kontras angka Sudoku dan Minesweeper minimal 4,5:1 pada sel netral. Kesalahan dan umpan balik memakai tinta merah. Umpan balik berada di ruang tetap di bawah kartu, memakai `GameTheme.danger` adaptif pada kanvas; pesan tidak menggeser papan. Untuk teks kesalahan di atas `face(id)`, gunakan `feedbackInk` (`#46373F`) dengan kontras minimal 4,5:1. Hasil menang tetap memakai `ink` agar terbaca. Seleksi dan keadaan tidak boleh disampaikan lewat warna saja: sertakan garis, simbol, atau label.
+
+Footer tetap di bawah saat seluruh konten muat. Jika tinggi konten melebihi ruang aman, gulir konten dan footer bersama dalam urutan dokumen agar kontrol tidak tertutup footer. Jangan menambal tata letak dengan offset tetap. Numpad Sudoku memakai satu baris 1–9 bila sembilan tombol selebar minimal 36 pt muat; selain itu gunakan dua baris 1–5 dan 6–9 yang terpusat, dengan tinggi tombol 44 pt.
 
 Interior papan tiap game mengikuti aturan sel tenang.
 
