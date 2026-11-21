@@ -4,6 +4,8 @@ OffPlay memakai gaya game kasual yang ceria: latar biru langit, huruf membulat y
 
 Dokumen ini mencatat desain menu koleksi OffPlay di SwiftUI, berdasarkan prototipe HTML. Nilai native mengacu pada `GameMenuTheme`, `GameMenuButtonStyle`, `GameBoxView`, dan `GameMenuPreview`. Untuk permainan aktif, lihat bagian [Layar gameplay](#layar-gameplay).
 
+Untuk arah pengembangan dan nada komunikasi, lihat [Identitas produk OffPlay](docs/product.md).
+
 ## Arah visual
 
 - Gunakan warna hijau, koral, biru, dan kuning untuk membedakan permainan.
