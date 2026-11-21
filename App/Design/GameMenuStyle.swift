@@ -29,6 +29,38 @@ enum GameMenuTheme {
     static let blockTile = adaptive(0x168458, 0x76be91)
     static let blockTileEdge = adaptive(0x0d5b3d, 0x173c43)
     static let blockCellEdge = adaptive(0x9cc8ad, 0x3d6374)
+    static let mineCovered = adaptive(0x168458, 0x28533e)
+    static let mineSurface = adaptive(0xffffff, 0x202e32)
+    static let mineSymbol = adaptive(0xffffff, 0xdff3fc)
+    static let mineRed = adaptive(0xa32e38, 0xff9486)
+    static let mineExplosion = color(0xa32e38)
+    static let mineGrid = adaptive(0x091a21, 0x76be91)
+
+    static func mineNumber(_ count: Int) -> Color {
+        switch count {
+        case 1: adaptive(0x164f76, 0x79c8ee)
+        case 2: adaptive(0x0d5b3d, 0x70d99b)
+        case 3: mineRed
+        case 4: adaptive(0x593f86, 0xc9aff2)
+        case 5: adaptive(0x843f25, 0xefb18d)
+        case 6: adaptive(0x146269, 0x82d4d3)
+        case 7: adaptive(0x46373f, 0xf0b7d7)
+        default: text
+        }
+    }
+
+    enum Tiles2048 {
+        static let two = adaptive(0xffffff, 0xf2e8cc)
+        static let four = adaptive(0xffe9a3, 0xe7d49a)
+        static let eight = adaptive(0xffda65, 0xdcc16d)
+        static let sixteen = adaptive(0xffc13b, 0xd5ac47)
+        static let thirtyTwo = adaptive(0xefa520, 0xd49a29)
+        static let sixtyFour = adaptive(0xe39518, 0xe29324)
+        static let oneTwentyEight = color(0x926700)
+        static let twoFiftySix = color(0x795000)
+        static let fiveTwelve = color(0x603b00)
+        static let oneThousandTwentyFour = color(0x472a00)
+    }
 
     static let unit: CGFloat = 4
     static let inset: CGFloat = 16

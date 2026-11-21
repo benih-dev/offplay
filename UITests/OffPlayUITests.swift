@@ -3,6 +3,34 @@ import OffPlayCore
 import UIKit
 
 final class OffPlayUITests: XCTestCase {
+    @MainActor func test2048ThemeEvidence() {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("game2048", in: app)
+                let footer = app.otherElements["session.footer"].frame
+                let arrows = ["left", "up", "down", "right"].map { app.buttons["slide.\($0)"] }
+                for arrow in arrows {
+                    XCTAssertTrue(arrow.isHittable)
+                    XCTAssertGreaterThanOrEqual(arrow.frame.height, 48)
+                    XCTAssertLessThanOrEqual(arrow.frame.maxY + 6, footer.minY)
+                }
+                XCTAssertLessThanOrEqual(footer.maxY, app.frame.maxY)
+                XCTAssertEqual(arrows[0].frame.minY, arrows[3].frame.minY, accuracy: 1)
+                XCTAssertEqual(arrows[0].frame.width, arrows[3].frame.width, accuracy: 1)
+                for direction in ["left", "up", "right", "down", "left", "up", "left", "down"] {
+                    app.buttons["slide.\(direction)"].tap()
+                }
+                let board = app.descendants(matching: .any)["slide.board"]
+                let values = Set(board.staticTexts.allElementsBoundByIndex.compactMap { Int($0.label.components(separatedBy: ", ").last ?? "") }.filter { $0 > 0 })
+                XCTAssertGreaterThanOrEqual(values.count, 3)
+                Thread.sleep(forTimeInterval: 2)
+                attach(app, name: "2048-\(language)-\(theme)")
+                app.terminate()
+            }
+        }
+    }
+
     @MainActor func testSudokuThemeEvidence() throws {
         for language in ["en", "id"] {
             for theme in ["light", "dark"] {
@@ -549,6 +577,49 @@ final class OffPlayUITests: XCTestCase {
         app.buttons["session.new"].tap()
         XCTAssertFalse(app.buttons["new.confirm"].exists)
         XCTAssertFalse(app.staticTexts["session.result"].exists)
+    }
+
+    @MainActor func testWordScrambleTilesFitAboveFooter() throws {
+        for language in ["en", "id"] {
+            for theme in ["light", "dark"] {
+                let app = launch(theme: theme, language: language)
+                open("wordScramble", in: app)
+                let footer = app.otherElements["session.footer"]
+                XCTAssertTrue(footer.exists)
+                XCTAssertTrue(app.buttons["session.new"].isHittable)
+                let slots = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.answer.'")).allElementsBoundByIndex
+                let letters = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'word.letter.'")).allElementsBoundByIndex
+                XCTAssertGreaterThanOrEqual(slots.count, 4)
+                XCTAssertEqual(slots.count, letters.count)
+                let submit = app.buttons["word.submit"]
+                for control in slots + letters + [submit] {
+                    XCTAssertTrue(control.exists)
+                    XCTAssertGreaterThanOrEqual(control.frame.width, 36)
+                    XCTAssertGreaterThanOrEqual(control.frame.height, 48)
+                    XCTAssertGreaterThanOrEqual(control.frame.minX, app.frame.minX)
+                    XCTAssertLessThanOrEqual(control.frame.maxX, app.frame.maxX)
+                    XCTAssertLessThanOrEqual(control.frame.maxY, footer.frame.minY, control.identifier)
+                }
+                for tiles in [slots, letters] {
+                    let firstTile = try XCTUnwrap(tiles.first)
+                    for tile in tiles {
+                        XCTAssertEqual(tile.frame.midY, firstTile.frame.midY, accuracy: 1)
+                    }
+                }
+
+                let letter = app.buttons["word.letter.0"]
+                let slot = app.buttons["word.answer.0"]
+                XCTAssertTrue(letter.isHittable)
+                letter.tap()
+                XCTAssertFalse(letter.isEnabled)
+                XCTAssertTrue(slot.isEnabled)
+                attach(app, name: "Word Scramble \(language) \(theme)")
+                slot.tap()
+                XCTAssertTrue(letter.isEnabled)
+                XCTAssertFalse(slot.isEnabled)
+                app.terminate()
+            }
+        }
     }
 
     @MainActor func testWordScrambleWinShowsCleanSolvedState() throws {

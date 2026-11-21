@@ -12,10 +12,12 @@ struct MinesweeperView: View {
             let size: CGFloat = textSize.isAccessibilitySize ? 64 : 48
             VStack(spacing: 10) {
                 HStack {
-                    Text(game.difficulty.localizedName).font(.subheadline)
+                    Text(game.difficulty.localizedName)
                     Spacer()
-                    Text("Flags \(game.flags.count)/\(game.mineCount)").font(.subheadline).monospacedDigit()
+                    Text("Flags \(game.flags.count)/\(game.mineCount)").monospacedDigit()
                 }
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(GameMenuTheme.text)
                 Button { flagMode.toggle() } label: { Label(flagMode ? LocalizedStringKey("Flag Mode: On") : "Flag Mode", systemImage: "flag") }
                     .buttonStyle(ActionButtonStyle(primary: flagMode)).accessibilityIdentifier("mines.flagMode")
                     .accessibilityValue(flagMode ? LocalizedStringKey("On") : "Off")
@@ -27,7 +29,7 @@ struct MinesweeperView: View {
                                     .frame(width: size, height: size)
                                     .foregroundStyle(foreground(game, index))
                                     .background(background(game, index))
-                                    .overlay(Rectangle().stroke(GameTheme.line, lineWidth: 1))
+                                    .overlay(Rectangle().stroke(GameMenuTheme.mineGrid, lineWidth: 1))
                             }
                             .buttonStyle(BoardButtonStyle())
                             .accessibilityLabel("Row \(index / game.side + 1), column \(index % game.side + 1), \(description(game, index))")
@@ -61,11 +63,14 @@ struct MinesweeperView: View {
         return String(localized: "covered")
     }
     private func foreground(_ game: MinesweeperGame, _ index: Int) -> Color {
-        if game.exploded == index { return GameTheme.canvas }
-        return game.isFinished && game.mines.contains(index) ? GameTheme.danger : GameTheme.ink
+        if game.exploded == index { return GameMenuTheme.paper }
+        if game.isFinished && game.mines.contains(index) { return GameMenuTheme.mineSymbol }
+        if game.flags.contains(index) { return GameMenuTheme.mineSymbol }
+        if game.revealed.contains(index) { return GameMenuTheme.mineNumber(game.adjacentMines(at: index)) }
+        return GameMenuTheme.mineSymbol
     }
     private func background(_ game: MinesweeperGame, _ index: Int) -> Color {
-        if game.exploded == index { return GameTheme.danger }
-        return game.revealed.contains(index) ? GameTheme.canvas : GameTheme.accentFill
+        if game.exploded == index { return GameMenuTheme.mineExplosion }
+        return game.revealed.contains(index) ? GameMenuTheme.mineSurface : GameMenuTheme.mineCovered
     }
 }
