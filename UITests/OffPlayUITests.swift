@@ -113,6 +113,28 @@ final class OffPlayUITests: XCTestCase {
         XCTAssertEqual(board.frame.integral, frame)
     }
 
+    @MainActor func testBlockGridSelectedPieceStaysInTray() {
+        for theme in ["light", "dark"] {
+            let app = launch(theme: theme)
+            open("blockGrid", in: app)
+            let board = app.descendants(matching: .any)["session.board"].firstMatch
+            let piece = app.buttons["block.piece.0"]
+            let other = app.buttons["block.piece.1"]
+            let hint = app.staticTexts["block.rotationHint"]
+            let cell = app.buttons["block.cell.0"]
+            for _ in 0..<4 where !hint.isHittable { app.swipeUp() }
+            let boardFrame = board.frame.integral, cellFrame = cell.frame.integral
+            piece.tap()
+            XCTAssertEqual(piece.value as? String, "selected")
+            XCTAssertEqual(other.value as? String, "available")
+            XCTAssertLessThanOrEqual(piece.frame.maxY, hint.frame.minY)
+            XCTAssertEqual(piece.frame.height, other.frame.height)
+            XCTAssertEqual(board.frame.integral, boardFrame)
+            XCTAssertEqual(cell.frame.integral, cellFrame)
+            app.terminate()
+        }
+    }
+
     @MainActor private func putAceOnFoundation(in app: XCUIApplication) throws -> CardSuit {
         open("klondike", in: app)
         var library = GameLibrary(seed: 42)

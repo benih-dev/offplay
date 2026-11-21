@@ -185,6 +185,16 @@ Sudoku memakai `GameTheme.canvas` untuk given dan `GameTheme.surface` untuk sel 
 
 Minesweeper: sel tertutup memakai `mineCovered` hijau dengan penanda titik; sel terbuka memakai `mineSurface` putih / netral gelap, angka 1–8 memakai `mineNumber` berbeda dengan kontras minimal 4,5:1. Garis memakai `mineGrid` (`#091A21` / `#76BE91`) dengan kontras minimal 3:1 pada kedua permukaan sel, bendera dan ranjau memakai `mineSymbol`, dan ledakan memakai `mineExplosion` merah dengan simbol putih.
 
+### Block Grid
+
+| Elemen | Token terang / gelap | Penggunaan |
+| --- | --- | --- |
+| Sel kosong | `utilitySurface` `#FFFFFF` / `#284653`, garis `blockCellEdge` `#9CC8AD` / `#3D6374` | Radius 4 pt, garis 1 pt, celah 2 pt memperlihatkan `boardWell` |
+| Blok terisi | `blockTile` `#168458` / `#76BE91`, garis `blockTileEdge` `#0D5B3D` / `#173C43` | Kontras minimal 4,5:1 terhadap sel kosong |
+| Kepingan tersedia | `utilitySurface`, garis `utilityOutline` 2 pt, bayangan `depth` 6 pt; blok `blockTile` | Radius 12 pt seperti tombol sekunder |
+| Kepingan terpilih | `face(id)`, garis `ink` 2 pt, bayangan 2 pt dan turun 4 pt; blok `greenDeep` | Ikon centang `ink` di pojok kanan atas agar seleksi tidak bergantung pada warna |
+| Kepingan terpakai | Garis putus-putus `utilityOutline` 2 pt tanpa isian, label `secondary` | Tidak dapat dipilih |
+
 ## Pemeliharaan
 
 Sumber implementasi native dalam repositori ini:
